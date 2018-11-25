@@ -1,5 +1,5 @@
 # qtq.Merge
-qtq.Mergeは、「クイックソートより速い（Quicker than QuickSort）」を目指している、マージソートの改良アルゴリズムです。
+qtq.Mergeは、「クイックソートより速い（Quicker than QuickSort）」を目指した、マージソートの改良アルゴリズムです。
 
 以下の特徴があります。  
 * 比較ソート
