@@ -16,15 +16,15 @@ qtq.Mergeは、「クイックソートより速い（Quicker than QuickSort）�
 # ビルド＆テスト
 ## **Msvc**
 cl Main.cpp -Ox -EHsc -Fe:TestMsvc.exe  
-./TestMsvc.exe  
+TestMsvc.exe  
 
 ## **clang++**
 clang++ Main.cpp -Ofast -o TestClang.exe  
-./TestClang.exe  
+TestClang.exe  
 
 ## **g++**
 g++ Main.cpp -Ofast -o TestGcc.exe  
-./TestGcc.exe  
+TestGcc.exe  
 
 <br>
 
