@@ -148,6 +148,6 @@ int main(int argc, char* argv[])
 	int nRange = std::numeric_limits<int>::max();
 	test(Src,     10000, nRange, 1, 4);
 	test(Src,   1000000, nRange, 1, 4);
-//	test(Src, 100000000, nRange, 1, 4);
+	test(Src, 100000000, nRange, 1, 4);
 	return 0;
 }
