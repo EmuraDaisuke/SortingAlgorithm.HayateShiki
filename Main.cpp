@@ -56,7 +56,7 @@ void test(eSrc Src, std::size_t nTest, int nRange, int nLoop, int nRepeat)
 	
 	auto a = std::vector<Test>(nTest);
 	for (int n = nLoop; n; --n){
-		printf("\n--- %lld\n", nTest);
+		printf("\n\n--- %lld\n", nTest);
 		
 		switch (Src){
 			case eSrc::Rand:{
@@ -99,7 +99,9 @@ void test(eSrc Src, std::size_t nTest, int nRange, int nLoop, int nRepeat)
 			Lapse l;
 			std::sort(s.begin(), s.end());
 		}
+		#endif//]
 		
+		#if 1//[
 		printf("\n== std::stable_sort\n");
 		for (int n = nRepeat; n; --n){
 			auto s = a;
