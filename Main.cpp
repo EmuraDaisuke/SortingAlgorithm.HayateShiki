@@ -111,11 +111,11 @@ void test(eSrc Src, std::size_t nTest, int nRange, int nLoop, int nRepeat)
 		#endif//]
 		
 		#if 1//[
-		printf("\n== qtq::Merge::TypeV<Test>::Sort\n");
+		printf("\n== qtq::Merge<Test>::Sort\n");
 		for (int n = nRepeat; n; --n){
 			auto s = a;
 			Lapse l;
-			qtq::Merge::TypeV<Test>::Sort(s.data(), s.size());
+			qtq::Merge<Test>::Sort(s.data(), s.size());
 		}
 		#endif//]
 		
@@ -127,7 +127,7 @@ void test(eSrc Src, std::size_t nTest, int nRange, int nLoop, int nRepeat)
 			
 			std::sort(s0.begin(), s0.end());
 			std::stable_sort(s1.begin(), s1.end());
-			qtq::Merge::TypeV<Test>::Sort(s2.data(), s2.size());
+			qtq::Merge<Test>::Sort(s2.data(), s2.size());
 			
 			auto bStrict01 = (memcmp(s0.data(), s1.data(), s1.size() * sizeof(Test)) == 0);
 			auto bStrict12 = (memcmp(s1.data(), s2.data(), s2.size() * sizeof(Test)) == 0);

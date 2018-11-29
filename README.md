@@ -40,7 +40,7 @@ TestGcc.exe
 Microsoft(R) C/C++ Optimizing Compiler Version 19.15.26732.1 for x64  
 Microsoft (R) Incremental Linker Version 14.15.26732.1  
 
-|件数|std::sort|std::stable_sort|qtq.Merge.TypeV|
+|件数|std::sort|std::stable_sort|qtq.Merge|
 |-:|-:|-:|-:|
 |10,000|0.00083858|*0.00069774*|**0.00060311**|
 |1,000,000|0.07069080|*0.06401268*|**0.06192394**|
@@ -53,7 +53,7 @@ Microsoft (R) Incremental Linker Version 14.15.26732.1
 clang version 7.0.0 (tags/RELEASE_700/final)  
 Target: x86_64-w64-windows-gnu  
 
-|件数|std::sort|std::stable_sort|qtq.Merge.TypeV|
+|件数|std::sort|std::stable_sort|qtq.Merge|
 |-:|-:|-:|-:|
 |10,000|*0.00040838*|0.00044848|**0.00040581**|
 |1,000,000|**0.05941431**|0.06861489|*0.06335664*|
@@ -66,7 +66,7 @@ Target: x86_64-w64-windows-gnu
 gcc version 8.2.0 (Rev3, Built by MSYS2 project)  
 Target: x86_64-w64-mingw32  
 
-|件数|std::sort|std::stable_sort|qtq.Merge.TypeV|
+|件数|std::sort|std::stable_sort|qtq.Merge|
 |-:|-:|-:|-:|
 |10,000|0.00041512|0.00045907|**0.00038881**|
 |1,000,000|**0.05990257**|0.06931713|*0.06063945*|
@@ -82,21 +82,21 @@ Target: x86_64-w64-mingw32
 以下は全て、float値「100,000,000」件でのベンチマークです。  
 
 ## 昇順済み 
-||std::sort|std::stable_sort|qtq.Merge.TypeV|
+||std::sort|std::stable_sort|qtq.Merge|
 |-:|-:|-:|-:|
 |Msvc|**0.21892567**|1.25088036|*0.24510241*|
 |clang|*1.00117798*|1.44316028|**0.25334411**|
 |gcc|1.33518179|*1.30792267*|**0.22993043**|
 
 ## 降順済み
-||std::sort|std::stable_sort|qtq.Merge.TypeV|
+||std::sort|std::stable_sort|qtq.Merge|
 |-:|-:|-:|-:|
 |Msvc|*0.27433638*|1.50812926|**0.26809872**|
 |clang|*0.92900829*|1.64602567|**0.28246292**|
 |gcc|*1.21591655*|1.55615578|**0.25077546**|
 
 ## 同値
-||std::sort|std::stable_sort|qtq.Merge.TypeV|
+||std::sort|std::stable_sort|qtq.Merge|
 |-:|-:|-:|-:|
 |Msvc|**0.06657813**|1.25241026|*0.24396806*|
 |clang|*0.97352844*|1.42485664|**0.24551785**|
