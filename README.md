@@ -13,6 +13,25 @@ qtq.Mergeは、「クイックソートより速い（Quicker than QuickSort）�
 
 <br>
 
+# 環境
+検証を行った環境は以下のとおりです。
+  * Windows 10 Pro 64bit  
+  * Core i7-8700 3.20GHz  
+
+## **Msvc**
+Microsoft(R) C/C++ Optimizing Compiler Version 19.15.26732.1 for x64  
+Microsoft (R) Incremental Linker Version 14.15.26732.1  
+
+## **clang**
+clang version 7.0.0 (tags/RELEASE_700/final)  
+Target: x86_64-w64-windows-gnu  
+
+## **gcc**
+gcc version 8.2.0 (Rev3, Built by MSYS2 project)  
+Target: x86_64-w64-mingw32  
+
+<br>
+
 # ビルド＆テスト
 ## **Msvc**
 cl Main.cpp -Ox -EHsc -Fe:TestMsvc.exe  
@@ -28,18 +47,11 @@ TestGcc.exe
 
 <br>
 
-# ベンチマーク
-動作環境は以下の通り。  
-  * Windows 10 Pro 64bit  
-  * Core i7-8700 3.20GHz  
-
-同じシードから生成した、ランダムなfloat値をソートしてみました。  
+# 乱数ベンチマーク
+同じシードから生成したfloat値をソートしました。  
 単位は秒で、数値が低いほど高速です。
 
 ## **Msvc**
-Microsoft(R) C/C++ Optimizing Compiler Version 19.15.26732.1 for x64  
-Microsoft (R) Incremental Linker Version 14.15.26732.1  
-
 |件数|std::sort|std::stable_sort|qtq.Merge|
 |-:|-:|-:|-:|
 |10,000|0.00083858|*0.00069774*|**0.00060311**|
@@ -50,9 +62,6 @@ Microsoft (R) Incremental Linker Version 14.15.26732.1
 初っ端からかましてくれましたが、この特性のお陰で勝つことができました。  
 
 ## **clang**
-clang version 7.0.0 (tags/RELEASE_700/final)  
-Target: x86_64-w64-windows-gnu  
-
 |件数|std::sort|std::stable_sort|qtq.Merge|
 |-:|-:|-:|-:|
 |10,000|*0.00040838*|0.00044848|**0.00040581**|
@@ -63,9 +72,6 @@ Target: x86_64-w64-windows-gnu
 ソースレベルで最適化を行う必要があるなど、コンパイラの最適化ロジックに疑問が残る結果となりました。  
 
 ## **gcc**
-gcc version 8.2.0 (Rev3, Built by MSYS2 project)  
-Target: x86_64-w64-mingw32  
-
 |件数|std::sort|std::stable_sort|qtq.Merge|
 |-:|-:|-:|-:|
 |10,000|0.00041512|0.00045907|**0.00038881**|
@@ -78,8 +84,9 @@ Target: x86_64-w64-mingw32
 
 <br>
 
-# 特性
-以下は全て、float値「100,000,000」件でのベンチマークです。  
+# 特性ベンチマーク
+以下は全て、float値「100,000,000」件でソートしました。  
+単位は秒で、数値が低いほど高速です。
 
 ## 昇順済み 
 ||std::sort|std::stable_sort|qtq.Merge|
