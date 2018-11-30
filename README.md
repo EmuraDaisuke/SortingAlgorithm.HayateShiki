@@ -34,16 +34,22 @@ Target: x86_64-w64-mingw32
 
 # ビルド＆テスト
 ## **Msvc**
+~~~
 cl Main.cpp -Ox -EHsc -Fe:TestMsvc.exe  
 TestMsvc.exe  
+~~~
 
 ## **clang++**
+~~~
 clang++ Main.cpp -O3 -o TestClang++.exe  
 TestClang++.exe  
+~~~
 
 ## **g++**
+~~~
 g++ Main.cpp -O3 -o TestG++.exe  
 TestG++.exe  
+~~~
 
 <br>
 
