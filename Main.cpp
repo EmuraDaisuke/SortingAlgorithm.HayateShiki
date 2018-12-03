@@ -48,15 +48,15 @@ bool operator ==(const Test& s, const Test& t)
 
 
 
-void test(eSrc Src, std::size_t nTest, int nRange, int nLoop, int nRepeat)
+void test(eSrc Src, int nTest, int nRange, int nLoop, int nRepeat)
 {
     std::random_device Seed;
     std::mt19937 Rand(Seed());
     std::uniform_int_distribution<> Range(0, nRange);
     
     auto a = std::vector<Test>(nTest);
-    for (int n = nLoop; n; --n){
-        printf("\n\n--- %lld\n", nTest);
+    for (auto n = nLoop; n; --n){
+        printf("\n\n--- %d\n", nTest);
         
         switch (Src){
             case eSrc::Rand:{
@@ -94,7 +94,7 @@ void test(eSrc Src, std::size_t nTest, int nRange, int nLoop, int nRepeat)
         
         #if 1//[
         printf("\n== std::sort\n");
-        for (int n = nRepeat; n; --n){
+        for (auto n = nRepeat; n; --n){
             auto s = a;
             Lapse l;
             std::sort(s.begin(), s.end());
@@ -103,7 +103,7 @@ void test(eSrc Src, std::size_t nTest, int nRange, int nLoop, int nRepeat)
         
         #if 1//[
         printf("\n== std::stable_sort\n");
-        for (int n = nRepeat; n; --n){
+        for (auto n = nRepeat; n; --n){
             auto s = a;
             Lapse l;
             std::stable_sort(s.begin(), s.end());
@@ -112,7 +112,7 @@ void test(eSrc Src, std::size_t nTest, int nRange, int nLoop, int nRepeat)
         
         #if 1//[
         printf("\n== qtq::Merge<Test>::Sort\n");
-        for (int n = nRepeat; n; --n){
+        for (auto n = nRepeat; n; --n){
             auto s = a;
             Lapse l;
             qtq::Merge<Test>::Sort(s.data(), s.size());
