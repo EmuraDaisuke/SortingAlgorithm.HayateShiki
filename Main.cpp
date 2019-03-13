@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <memory.h>
 
-#include "./qtq.Merge.h"
+#include "./HayateShiki.h"
 #include "./Lapse.h"
 
 
@@ -111,11 +111,11 @@ void test(eSrc Src, int nTest, int nRange, int nLoop, int nRepeat)
         #endif//]
         
         #if 1//[
-        printf("\n== qtq::Merge<Test>::Sort\n");
+        printf("\n== HayateShiki<Test>::Sort\n");
         for (auto n = nRepeat; n; --n){
             auto s = a;
             Lapse l;
-            qtq::Merge<Test>::Sort(s.data(), s.size());
+            HayateShiki<Test>::Sort(s.data(), s.size());
         }
         #endif//]
         
@@ -127,7 +127,7 @@ void test(eSrc Src, int nTest, int nRange, int nLoop, int nRepeat)
             
             std::sort(s0.begin(), s0.end());
             std::stable_sort(s1.begin(), s1.end());
-            qtq::Merge<Test>::Sort(s2.data(), s2.size());
+            HayateShiki<Test>::Sort(s2.data(), s2.size());
             
             auto bStrict01 = (memcmp(s0.data(), s1.data(), s1.size() * sizeof(Test)) == 0);
             auto bStrict12 = (memcmp(s1.data(), s2.data(), s2.size() * sizeof(Test)) == 0);

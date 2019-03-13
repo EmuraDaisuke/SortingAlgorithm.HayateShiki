@@ -23,13 +23,10 @@
 
 
 
-namespace qtq {
-
-
 // 
 
 template <class T>
-class Merge final {
+class HayateShiki final {
     public:
         static void Sort(T* const aSrc, std::size_t nSrc);
     
@@ -60,7 +57,7 @@ class Merge final {
 // 
 
 template <class T>
-void Merge<T>::Sort(T* const aSrc, std::size_t nSrc)
+void HayateShiki<T>::Sort(T* const aSrc, std::size_t nSrc)
 {
     if (aSrc && nSrc){
         auto aTmp = new T[nSrc];
@@ -134,7 +131,7 @@ void Merge<T>::Sort(T* const aSrc, std::size_t nSrc)
 // 
 
 template <class T>
-struct Merge<T>::Part
+struct HayateShiki<T>::Part
 {
     enum oUnit {
         oUnit_Asc,
@@ -150,7 +147,7 @@ struct Merge<T>::Part
 
 
 template <class T>
-struct Merge<T>::Unit
+struct HayateShiki<T>::Unit
 {
     T*              a;
     std::size_t     n;
@@ -159,7 +156,7 @@ struct Merge<T>::Unit
 
 
 template <class T>
-struct Merge<T>::Dive
+struct HayateShiki<T>::Dive
 {
     Unit            mUnit;
     T*              mpJoin;
@@ -170,7 +167,7 @@ struct Merge<T>::Dive
 // 
 
 template <class T>
-int Merge<T>::Msb(std::size_t v)
+int HayateShiki<T>::Msb(std::size_t v)
 {
     if (v){
         union IEEE_754 {
@@ -191,7 +188,7 @@ int Merge<T>::Msb(std::size_t v)
 
 
 template <class T>
-int Merge<T>::MsbAlignment(std::size_t v)
+int HayateShiki<T>::MsbAlignment(std::size_t v)
 {
     return Msb(v + v - 1);
 }
@@ -199,7 +196,7 @@ int Merge<T>::MsbAlignment(std::size_t v)
 
 
 template <class T>
-int Merge<T>::LowerLimit(int v, int limit)
+int HayateShiki<T>::LowerLimit(int v, int limit)
 {
     return (v > limit)? v: limit;
 }
@@ -207,7 +204,7 @@ int Merge<T>::LowerLimit(int v, int limit)
 
 
 template <class T>
-constexpr std::size_t Merge<T>::Bit(int v)
+constexpr std::size_t HayateShiki<T>::Bit(int v)
 {
     return (1ULL << v);
 }
@@ -215,7 +212,7 @@ constexpr std::size_t Merge<T>::Bit(int v)
 
 
 template <class T>
-std::size_t Merge<T>::Num(T* a, T* e)
+std::size_t HayateShiki<T>::Num(T* a, T* e)
 {
     return (e - a);
 }
@@ -223,7 +220,7 @@ std::size_t Merge<T>::Num(T* a, T* e)
 
 
 template <class T>
-T* Merge<T>::Copy(T* pDst, T* pSrc, std::size_t nSrc)
+T* HayateShiki<T>::Copy(T* pDst, T* pSrc, std::size_t nSrc)
 {
     while (nSrc--) *pDst++ = *pSrc++;
     return pDst;
@@ -232,7 +229,7 @@ T* Merge<T>::Copy(T* pDst, T* pSrc, std::size_t nSrc)
 
 
 template <class T>
-T* Merge<T>::Join(T* pJoin, Unit* pUnit, Part* pPart)
+T* HayateShiki<T>::Join(T* pJoin, Unit* pUnit, Part* pPart)
 {
     auto nDsc = pPart->n[Part::oUnit_Dsc];
     auto nAsc = pPart->n[Part::oUnit_Asc];
@@ -248,7 +245,7 @@ T* Merge<T>::Join(T* pJoin, Unit* pUnit, Part* pPart)
 
 
 template <class T>
-T* Merge<T>::Join(T* aJoin, Unit* pUnit, Part* pPart0, Part* pPart1)
+T* HayateShiki<T>::Join(T* aJoin, Unit* pUnit, Part* pPart0, Part* pPart1)
 {
     auto pJoin = aJoin;
     auto o0 = pPart0->o;
@@ -308,7 +305,7 @@ T* Merge<T>::Join(T* aJoin, Unit* pUnit, Part* pPart0, Part* pPart1)
 
 
 template <class T>
-T* Merge<T>::Join(T* aJoin, Unit* pUnit, Unit* pUnit0, Unit* pUnit1)
+T* HayateShiki<T>::Join(T* aJoin, Unit* pUnit, Unit* pUnit0, Unit* pUnit1)
 {
     auto pJoin = aJoin;
     auto p0 = pUnit0->a;
@@ -348,7 +345,7 @@ T* Merge<T>::Join(T* aJoin, Unit* pUnit, Unit* pUnit0, Unit* pUnit1)
 
 
 template <class T>
-T* Merge<T>::InitPart(Part* pPart, T* pSrc, T* eSrc, T** paDsc)
+T* HayateShiki<T>::InitPart(Part* pPart, T* pSrc, T* eSrc, T** paDsc)
 {
     Auto nSrc = Num(pSrc, eSrc);
     nSrc = (nSrc < nIns)? nSrc: nIns;
@@ -422,8 +419,4 @@ T* Merge<T>::InitPart(Part* pPart, T* pSrc, T* eSrc, T** paDsc)
             return nullptr;
         }
     }
-}
-
-
-
 }
