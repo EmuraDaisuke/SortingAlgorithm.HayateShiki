@@ -224,7 +224,7 @@ std::size_t HayateShiki<T>::Num(T* a, T* e)
 template <class T>
 T* HayateShiki<T>::Copy(T* pDst, T* pSrc, std::size_t nSrc)
 {
-    while (nSrc--) *pDst++ = *pSrc++;
+    while (nSrc--) *pDst++ = std::move(*pSrc++);
     return pDst;
 }
 
@@ -256,21 +256,21 @@ T* HayateShiki<T>::Join(T* aJoin, Unit* pUnit, Part* pPart0, Part* pPart1)
     auto p1 = pPart1->a[o1];
     auto n0 = pPart0->n[o0];
     auto n1 = pPart1->n[o1];
-    auto v0 = *p0;
-    auto v1 = *p1;
+    auto v0 = std::move(*p0);
+    auto v1 = std::move(*p1);
     
     while (true){
         if (v1 < v0){
-            *pJoin++ = v1;
+            *pJoin++ = std::move(v1);
             if (--n1){
-                v1 = *++p1;
+                v1 = std::move(*++p1);
                 Continue;
             } else {
                 if (o1){
                     o1 = Part::oUnit_Asc;
                     p1 = pPart1->a[o1];
                     n1 = pPart1->n[o1];
-                    v1 = *p1;
+                    v1 = std::move(*p1);
                     Continue;
                 } else {
                     pJoin = Copy(pJoin, p0, n0);
@@ -279,16 +279,16 @@ T* HayateShiki<T>::Join(T* aJoin, Unit* pUnit, Part* pPart0, Part* pPart1)
                 }
             }
         } else {
-            *pJoin++ = v0;
+            *pJoin++ = std::move(v0);
             if (--n0){
-                v0 = *++p0;
+                v0 = std::move(*++p0);
                 Continue;
             } else {
                 if (o0){
                     o0 = Part::oUnit_Asc;
                     p0 = pPart0->a[o0];
                     n0 = pPart0->n[o0];
-                    v0 = *p0;
+                    v0 = std::move(*p0);
                     Continue;
                 } else {
                     pJoin = Copy(pJoin, p1, n1);
@@ -314,23 +314,23 @@ T* HayateShiki<T>::Join(T* aJoin, Unit* pUnit, Unit* pUnit0, Unit* pUnit1)
     auto p1 = pUnit1->a;
     auto n0 = pUnit0->n;
     auto n1 = pUnit1->n;
-    auto v0 = *p0;
-    auto v1 = *p1;
+    auto v0 = std::move(*p0);
+    auto v1 = std::move(*p1);
     
     while (true){
         if (v1 < v0){
-            *pJoin++ = v1;
+            *pJoin++ = std::move(v1);
             if (--n1){
-                v1 = *++p1;
+                v1 = std::move(*++p1);
                 Continue;
             } else {
                 pJoin = Copy(pJoin, p0, n0);
                 break;
             }
         } else {
-            *pJoin++ = v0;
+            *pJoin++ = std::move(v0);
             if (--n0){
-                v0 = *++p0;
+                v0 = std::move(*++p0);
                 Continue;
             } else {
                 pJoin = Copy(pJoin, p1, n1);
@@ -361,13 +361,13 @@ T* HayateShiki<T>::InitPart(Part* pPart, T* pSrc, T* eSrc, T** paDsc)
         auto aIns = pSrc;
         auto eIns = pSrc + nSrc;
         while (++aIns < eIns){
-            auto v = aIns[0];
+            auto v = std::move(aIns[0]);
             if (v < aIns[-1]){
                 auto pIns = aIns;
                 do {
-                    pIns[0] = pIns[-1];
+                    pIns[0] = std::move(pIns[-1]);
                 } while (--pIns > pSrc && v < pIns[-1]);
-                pIns[0] = v;
+                pIns[0] = std::move(v);
             }
         }
     }
@@ -380,24 +380,24 @@ T* HayateShiki<T>::InitPart(Part* pPart, T* pSrc, T* eSrc, T** paDsc)
             auto eDsc = aDsc;
             
             {   // 
-                auto min = pSrc[0];
-                auto max = pSrc[nSrc-1];
+                auto pMin = &pSrc[0];
+                auto pMax = &pSrc[nSrc-1];
                 
                 auto aAsc = pOdd;
                 auto eAsc = aAsc;
                 while (nOdd--){
-                    auto v = *pOdd++;
-                    if (v < max){
-                        if (v < min){
-                            min = v;
-                            *--aDsc = v;
+                    auto v = std::move(*pOdd++);
+                    if (v < *pMax){
+                        if (v < *pMin){
+                            *--aDsc = std::move(v);
+                            pMin = aDsc;
                             Continue;
                         } else {
                             break;
                         }
                     } else {
-                        max = v;
-                        *eAsc++ = v;
+                        pMax = eAsc;
+                        *eAsc++ = std::move(v);
                         Continue;
                     }
                 }
