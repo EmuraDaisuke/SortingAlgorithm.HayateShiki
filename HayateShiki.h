@@ -50,8 +50,8 @@ class HayateShiki final {
         static T* InitPart(Part* pPart, T* pSrc, T* eSrc, T** paDsc);
     
     private:
-        static const std::size_t bIns = 5;
-        static const std::size_t nIns = Bit(bIns);
+        static constexpr std::size_t bIns = 5;
+        static constexpr std::size_t nIns = Bit(bIns);
 };
 
 
