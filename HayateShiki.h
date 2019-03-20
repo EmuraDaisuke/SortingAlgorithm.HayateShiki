@@ -31,8 +31,6 @@ class HayateShiki final {
         static void Sort(T* const aSrc, std::size_t nSrc);
     
     private:
-        static const std::size_t nIns = 32;
-        
         struct Part;
         struct Unit;
         struct Dive;
@@ -50,6 +48,10 @@ class HayateShiki final {
         static T* Join(T* aJoin, Unit* pUnit, Unit* pUnit0, Unit* pUnit1);
         
         static T* InitPart(Part* pPart, T* pSrc, T* eSrc, T** paDsc);
+    
+    private:
+        static const std::size_t bIns = 5;
+        static const std::size_t nIns = Bit(bIns);
 };
 
 
@@ -62,7 +64,7 @@ void HayateShiki<T>::Sort(T* const aSrc, std::size_t nSrc)
     if (aSrc && nSrc){
         auto aTmp = new T[nSrc];
         
-        Auto nDive = LowerLimit((MsbAlignment(nSrc)-2), 1);
+        Auto nDive = LowerLimit((MsbAlignment(nSrc) - bIns), 1);
         Auto aDive = LocalAlloc(Dive, (sizeof(Dive) * (nDive+1)));
         for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].mpJoin = (oDive & Bit(0))? aTmp: aSrc;
         
