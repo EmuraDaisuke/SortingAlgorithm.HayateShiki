@@ -19,53 +19,127 @@
 #endif//]
 
 #define Auto                decltype(auto)
-#define LocalAlloc(T, s)    static_cast<T*>(alloca(s))
+#define local_alloc(T, s)   static_cast<T*>(alloca(s))
+#define local_array(T, n)   local_alloc(T, sizeof(T) * n)
+
+
+
+namespace HayateShiki {
 
 
 
 // 
 
 template <class T>
-class HayateShiki final {
-    public:
-        static void Sort(T* const aSrc, std::size_t nSrc);
+struct Part
+{
+    enum oUnit {
+        oUnit_Asc,
+        oUnit_Dsc,
+        oUnit_Num,
+    };
     
-    private:
-        struct Part;
-        struct Unit;
-        struct Dive;
-        
-        static int Msb(std::size_t v);
-        static int MsbAlignment(std::size_t v);
-        static int LowerLimit(int v, int limit);
-        static constexpr std::size_t Bit(int v);
-        
-        static std::size_t Num(T* a, T* e);
-        static T* Copy(T* pDst, T* pSrc, std::size_t nSrc);
-        
-        static T* Join(T* pJoin, Unit* pUnit, Part* pPart);
-        static T* Join(T* aJoin, Unit* pUnit, Part* pPart0, Part* pPart1);
-        static T* Join(T* aJoin, Unit* pUnit, Unit* pUnit0, Unit* pUnit1);
-        
-        static T* InitPart(Part* pPart, T* pSrc, T* eSrc, T** paDsc);
-    
-    private:
-        static constexpr std::size_t bIns = 5;
-        static constexpr std::size_t nIns = Bit(bIns);
+    T*              a[oUnit_Num];
+    std::size_t     n[oUnit_Num];
+    oUnit           o;
+};
+
+
+
+template <class T>
+struct Unit
+{
+    T*              a;
+    std::size_t     n;
+};
+
+
+
+template <class T>
+struct Dive
+{
+    Unit<T>         mUnit;
+    T*              mpJoin;
 };
 
 
 
 // 
 
-template <class T>
-void HayateShiki<T>::Sort(T* const aSrc, std::size_t nSrc)
+int Msb(std::size_t v)
 {
-    if (aSrc && nSrc){
+    if (v){
+        union IEEE_754 {
+            float v;
+            struct {
+                unsigned int fraction:23;
+                unsigned int exponent:8;
+                unsigned int sign:1;
+            } map;
+        };
+        IEEE_754 lzc;
+        lzc.v = v;
+        return (lzc.map.exponent - 127);
+    }
+    return -1;
+}
+
+
+
+int MsbAlignment(std::size_t v)
+{
+    return Msb(v + v - 1);
+}
+
+
+
+int LowerLimit(int v, int limit)
+{
+    return (v > limit)? v: limit;
+}
+
+
+
+constexpr std::size_t Bit(int v)
+{
+    return (1ULL << v);
+}
+
+
+
+// 
+
+constexpr std::size_t bIns = 5;
+constexpr std::size_t nIns = Bit(bIns);
+
+
+
+// 
+
+template <class T> void Sort(T* const aSrc, std::size_t nSrc);
+
+template <class T> std::size_t Num(T* a, T* e);
+
+template <class T> T* Copy(T* pDst, T* pSrc, std::size_t nSrc);
+
+template <class T> T* Join(T* pJoin, Unit<T>* pUnit, Part<T>* pPart);
+template <class T> T* Join(T* aJoin, Unit<T>* pUnit, Part<T>* pPart0, Part<T>* pPart1);
+template <class T> T* Join(T* aJoin, Unit<T>* pUnit, Unit<T>* pUnit0, Unit<T>* pUnit1);
+
+template <class T> T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc);
+
+
+
+// 
+
+template <class T>
+void Sort(T* const aSrc, std::size_t nSrc)
+{
+    if (aSrc && nSrc > 1){
         auto aTmp = new T[nSrc];
         
         Auto nDive = LowerLimit((MsbAlignment(nSrc) - bIns), 1);
-        Auto aDive = LocalAlloc(Dive, (sizeof(Dive) * (nDive+1)));
+        Auto aDive = local_array(Dive<T>, (nDive+1));
         for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].mpJoin = (oDive & Bit(0))? aTmp: aSrc;
         
         {   // 
@@ -77,10 +151,10 @@ void HayateShiki<T>::Sort(T* const aSrc, std::size_t nSrc)
                 auto pSrc = &aSrc[0];
                 auto eSrc = &aSrc[nSrc];
                 while (pSrc){
-                    Unit vUnit;
+                    Unit<T> vUnit;
                     
                     {   // 
-                        Part vPart0, vPart1;
+                        Part<T> vPart0, vPart1;
                         auto aDsc = &aTmp[nSrc];
                         if ((pSrc = InitPart(&vPart0, pSrc, eSrc, &aDsc))){
                             pSrc = InitPart(&vPart1, pSrc, eSrc, &aDsc);
@@ -130,91 +204,8 @@ void HayateShiki<T>::Sort(T* const aSrc, std::size_t nSrc)
 
 
 
-// 
-
 template <class T>
-struct HayateShiki<T>::Part
-{
-    enum oUnit {
-        oUnit_Asc,
-        oUnit_Dsc,
-        oUnit_Num,
-    };
-    
-    T*              a[oUnit_Num];
-    std::size_t     n[oUnit_Num];
-    oUnit           o;
-};
-
-
-
-template <class T>
-struct HayateShiki<T>::Unit
-{
-    T*              a;
-    std::size_t     n;
-};
-
-
-
-template <class T>
-struct HayateShiki<T>::Dive
-{
-    Unit            mUnit;
-    T*              mpJoin;
-};
-
-
-
-// 
-
-template <class T>
-int HayateShiki<T>::Msb(std::size_t v)
-{
-    if (v){
-        union IEEE_754 {
-            float v;
-            struct {
-                unsigned int fraction:23;
-                unsigned int exponent:8;
-                unsigned int sign:1;
-            } map;
-        };
-        IEEE_754 lzc;
-        lzc.v = v;
-        return (lzc.map.exponent - 127);
-    }
-    return -1;
-}
-
-
-
-template <class T>
-int HayateShiki<T>::MsbAlignment(std::size_t v)
-{
-    return Msb(v + v - 1);
-}
-
-
-
-template <class T>
-int HayateShiki<T>::LowerLimit(int v, int limit)
-{
-    return (v > limit)? v: limit;
-}
-
-
-
-template <class T>
-constexpr std::size_t HayateShiki<T>::Bit(int v)
-{
-    return (1ULL << v);
-}
-
-
-
-template <class T>
-std::size_t HayateShiki<T>::Num(T* a, T* e)
+std::size_t Num(T* a, T* e)
 {
     return (e - a);
 }
@@ -222,7 +213,7 @@ std::size_t HayateShiki<T>::Num(T* a, T* e)
 
 
 template <class T>
-T* HayateShiki<T>::Copy(T* pDst, T* pSrc, std::size_t nSrc)
+T* Copy(T* pDst, T* pSrc, std::size_t nSrc)
 {
     while (nSrc--) *pDst++ = std::move(*pSrc++);
     return pDst;
@@ -231,23 +222,23 @@ T* HayateShiki<T>::Copy(T* pDst, T* pSrc, std::size_t nSrc)
 
 
 template <class T>
-T* HayateShiki<T>::Join(T* pJoin, Unit* pUnit, Part* pPart)
+T* Join(T* pJoin, Unit<T>* pUnit, Part<T>* pPart)
 {
-    auto nDsc = pPart->n[Part::oUnit_Dsc];
-    auto nAsc = pPart->n[Part::oUnit_Asc];
+    auto nDsc = pPart->n[Part<T>::oUnit_Dsc];
+    auto nAsc = pPart->n[Part<T>::oUnit_Asc];
     
     pUnit->a = pJoin;
     pUnit->n = nDsc + nAsc;
     
-    pJoin = Copy(pJoin, pPart->a[Part::oUnit_Dsc], nDsc);
-    pJoin = Copy(pJoin, pPart->a[Part::oUnit_Asc], nAsc);
+    pJoin = Copy(pJoin, pPart->a[Part<T>::oUnit_Dsc], nDsc);
+    pJoin = Copy(pJoin, pPart->a[Part<T>::oUnit_Asc], nAsc);
     return pJoin;
 }
 
 
 
 template <class T>
-T* HayateShiki<T>::Join(T* aJoin, Unit* pUnit, Part* pPart0, Part* pPart1)
+T* Join(T* aJoin, Unit<T>* pUnit, Part<T>* pPart0, Part<T>* pPart1)
 {
     auto pJoin = aJoin;
     auto o0 = pPart0->o;
@@ -267,14 +258,14 @@ T* HayateShiki<T>::Join(T* aJoin, Unit* pUnit, Part* pPart0, Part* pPart1)
                 Continue;
             } else {
                 if (o1){
-                    o1 = Part::oUnit_Asc;
+                    o1 = Part<T>::oUnit_Asc;
                     p1 = pPart1->a[o1];
                     n1 = pPart1->n[o1];
                     v1 = std::move(*p1);
                     Continue;
                 } else {
                     pJoin = Copy(pJoin, p0, n0);
-                    if (o0) pJoin = Copy(pJoin, pPart0->a[Part::oUnit_Asc], pPart0->n[Part::oUnit_Asc]);
+                    if (o0) pJoin = Copy(pJoin, pPart0->a[Part<T>::oUnit_Asc], pPart0->n[Part<T>::oUnit_Asc]);
                     break;
                 }
             }
@@ -285,14 +276,14 @@ T* HayateShiki<T>::Join(T* aJoin, Unit* pUnit, Part* pPart0, Part* pPart1)
                 Continue;
             } else {
                 if (o0){
-                    o0 = Part::oUnit_Asc;
+                    o0 = Part<T>::oUnit_Asc;
                     p0 = pPart0->a[o0];
                     n0 = pPart0->n[o0];
                     v0 = std::move(*p0);
                     Continue;
                 } else {
                     pJoin = Copy(pJoin, p1, n1);
-                    if (o1) pJoin = Copy(pJoin, pPart1->a[Part::oUnit_Asc], pPart1->n[Part::oUnit_Asc]);
+                    if (o1) pJoin = Copy(pJoin, pPart1->a[Part<T>::oUnit_Asc], pPart1->n[Part<T>::oUnit_Asc]);
                     break;
                 }
             }
@@ -307,7 +298,7 @@ T* HayateShiki<T>::Join(T* aJoin, Unit* pUnit, Part* pPart0, Part* pPart1)
 
 
 template <class T>
-T* HayateShiki<T>::Join(T* aJoin, Unit* pUnit, Unit* pUnit0, Unit* pUnit1)
+T* Join(T* aJoin, Unit<T>* pUnit, Unit<T>* pUnit0, Unit<T>* pUnit1)
 {
     auto pJoin = aJoin;
     auto p0 = pUnit0->a;
@@ -347,14 +338,14 @@ T* HayateShiki<T>::Join(T* aJoin, Unit* pUnit, Unit* pUnit0, Unit* pUnit1)
 
 
 template <class T>
-T* HayateShiki<T>::InitPart(Part* pPart, T* pSrc, T* eSrc, T** paDsc)
+T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc)
 {
     Auto nSrc = Num(pSrc, eSrc);
     nSrc = (nSrc < nIns)? nSrc: nIns;
     
     {   // 
-        pPart->a[Part::oUnit_Asc] = pSrc;
-        pPart->n[Part::oUnit_Asc] = nSrc;
+        pPart->a[Part<T>::oUnit_Asc] = pSrc;
+        pPart->n[Part<T>::oUnit_Asc] = nSrc;
     }
     
     {   // 
@@ -401,24 +392,28 @@ T* HayateShiki<T>::InitPart(Part* pPart, T* pSrc, T* eSrc, T** paDsc)
                         Continue;
                     }
                 }
-                pPart->n[Part::oUnit_Asc] += Num(aAsc, eAsc);
+                pPart->n[Part<T>::oUnit_Asc] += Num(aAsc, eAsc);
             }
             
             {   // 
                 Auto nDsc = Num(aDsc, eDsc);
-                pPart->a[Part::oUnit_Dsc] = aDsc;
-                pPart->n[Part::oUnit_Dsc] = nDsc;
-                pPart->o = (nDsc)? Part::oUnit_Dsc: Part::oUnit_Asc;
+                pPart->a[Part<T>::oUnit_Dsc] = aDsc;
+                pPart->n[Part<T>::oUnit_Dsc] = nDsc;
+                pPart->o = (nDsc)? Part<T>::oUnit_Dsc: Part<T>::oUnit_Asc;
                 *paDsc = aDsc;
             }
             return (++nOdd)? --pOdd: nullptr;
         } else {
             {   // 
-                pPart->a[Part::oUnit_Dsc] = nullptr;
-                pPart->n[Part::oUnit_Dsc] = 0;
-                pPart->o = Part::oUnit_Asc;
+                pPart->a[Part<T>::oUnit_Dsc] = nullptr;
+                pPart->n[Part<T>::oUnit_Dsc] = 0;
+                pPart->o = Part<T>::oUnit_Asc;
             }
             return nullptr;
         }
     }
+}
+
+
+
 }
