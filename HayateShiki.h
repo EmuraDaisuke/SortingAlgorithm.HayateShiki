@@ -121,6 +121,7 @@ template <class T> void Sort(T* const aSrc, std::size_t nSrc);
 template <class T> std::size_t Num(T* a, T* e);
 
 template <class T> T* Copy(T* pDst, T* pSrc, std::size_t nSrc);
+template <class T> T* Copy(T* pDst, T* pSrc, std::size_t nSrc, T& v);
 
 template <class T> T* Join(T* pJoin, Unit<T>* pUnit, Part<T>* pPart);
 template <class T> T* Join(T* aJoin, Unit<T>* pUnit, Part<T>* pPart0, Part<T>* pPart1);
@@ -222,6 +223,15 @@ T* Copy(T* pDst, T* pSrc, std::size_t nSrc)
 
 
 template <class T>
+T* Copy(T* pDst, T* pSrc, std::size_t nSrc, T& v)
+{
+    *pDst = std::move(v);
+    return Copy(++pDst, ++pSrc, --nSrc);
+}
+
+
+
+template <class T>
 T* Join(T* pJoin, Unit<T>* pUnit, Part<T>* pPart)
 {
     auto nDsc = pPart->n[Part<T>::oUnit_Dsc];
@@ -264,7 +274,7 @@ T* Join(T* aJoin, Unit<T>* pUnit, Part<T>* pPart0, Part<T>* pPart1)
                     v1 = std::move(*p1);
                     Continue;
                 } else {
-                    pJoin = Copy(pJoin, p0, n0);
+                    pJoin = Copy(pJoin, p0, n0, v0);
                     if (o0) pJoin = Copy(pJoin, pPart0->a[Part<T>::oUnit_Asc], pPart0->n[Part<T>::oUnit_Asc]);
                     break;
                 }
@@ -282,7 +292,7 @@ T* Join(T* aJoin, Unit<T>* pUnit, Part<T>* pPart0, Part<T>* pPart1)
                     v0 = std::move(*p0);
                     Continue;
                 } else {
-                    pJoin = Copy(pJoin, p1, n1);
+                    pJoin = Copy(pJoin, p1, n1, v1);
                     if (o1) pJoin = Copy(pJoin, pPart1->a[Part<T>::oUnit_Asc], pPart1->n[Part<T>::oUnit_Asc]);
                     break;
                 }
@@ -315,7 +325,7 @@ T* Join(T* aJoin, Unit<T>* pUnit, Unit<T>* pUnit0, Unit<T>* pUnit1)
                 v1 = std::move(*++p1);
                 Continue;
             } else {
-                pJoin = Copy(pJoin, p0, n0);
+                pJoin = Copy(pJoin, p0, n0, v0);
                 break;
             }
         } else {
@@ -324,7 +334,7 @@ T* Join(T* aJoin, Unit<T>* pUnit, Unit<T>* pUnit0, Unit<T>* pUnit1)
                 v0 = std::move(*++p0);
                 Continue;
             } else {
-                pJoin = Copy(pJoin, p1, n1);
+                pJoin = Copy(pJoin, p1, n1, v1);
                 break;
             }
         }
