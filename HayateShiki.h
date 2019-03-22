@@ -352,9 +352,9 @@ T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc)
         auto aIns = pSrc;
         auto eIns = pSrc + nSrc;
         while (++aIns < eIns){
-            auto v = std::move(aIns[0]);
-            if (v < aIns[-1]){
+            if (aIns[0] < aIns[-1]){
                 auto pIns = aIns;
+                auto v = std::move(pIns[0]);
                 do {
                     pIns[0] = std::move(pIns[-1]);
                 } while (--pIns > pSrc && v < pIns[-1]);
