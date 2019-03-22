@@ -4,6 +4,7 @@
 
 
 
+#include <cstddef>
 #include <malloc.h>
 
 #if _MSC_VER//[
@@ -66,7 +67,7 @@ struct Dive
 
 // 
 
-int Msb(std::size_t v)
+inline int Msb(std::size_t v)
 {
     if (v){
         union IEEE_754 {
@@ -86,14 +87,14 @@ int Msb(std::size_t v)
 
 
 
-int MsbAlignment(std::size_t v)
+inline int MsbAlignment(std::size_t v)
 {
     return Msb(v + v - 1);
 }
 
 
 
-int LowerLimit(int v, int limit)
+inline int LowerLimit(int v, int limit)
 {
     return (v > limit)? v: limit;
 }
