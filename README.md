@@ -98,38 +98,38 @@
 
 # ビルド＆テスト
 検証を行った環境は以下のとおりです。
-  * Windows 10 Pro 64bit  
-  * Core i7-8700 3.20GHz  
+* Windows 10 Pro 64bit
+* Core i7-8700 3.20GHz
 
 ## **Msvc**
 Microsoft(R) C/C++ Optimizing Compiler Version 19.15.26732.1 for x64  
 Microsoft (R) Incremental Linker Version 14.15.26732.1  
 ~~~
-cl Main.cpp -Ox -EHsc -Fe:TestMsvc.exe  
-TestMsvc.exe  
+cl Main.cpp -Ox -EHsc -Fe:TestMsvc.exe
+TestMsvc.exe
 ~~~
 
 ## **clang++**
 clang version 7.0.0 (tags/RELEASE_700/final)  
 Target: x86_64-w64-windows-gnu  
 ~~~
-clang++ Main.cpp -O3 -o TestClang++.exe  
-TestClang++.exe  
+clang++ Main.cpp -O3 -o TestClang++.exe
+TestClang++.exe
 ~~~
 
 ## **g++**
 gcc version 8.2.0 (Rev3, Built by MSYS2 project)  
 Target: x86_64-w64-mingw32  
 ~~~
-g++ Main.cpp -O3 -o TestG++.exe  
-TestG++.exe  
+g++ Main.cpp -O3 -o TestG++.exe
+TestG++.exe
 ~~~
 
 <br>
 
 # 乱数ベンチマーク
 同じシードから生成したfloat値をソートしました。  
-単位は秒で、数値が低いほど高速です。
+単位は秒で、数値が低いほど高速です。  
 
 ## **Msvc**
 |件数|std::sort|std::stable_sort|颯式|
@@ -166,7 +166,7 @@ TestG++.exe
 
 # 特性ベンチマーク
 以下は全て、float値「100,000,000」件でソートしました。  
-単位は秒で、数値が低いほど高速です。
+単位は秒で、数値が低いほど高速です。  
 
 ## 昇順済み 
 ||std::sort|std::stable_sort|颯式|
