@@ -1,6 +1,6 @@
 # 颯式
 颯式（はやてしき）は、「クイックソート種より高速」を目指した、マージソートの改良アルゴリズムです。  
-[刹那式（せつなしき）](https://github.com/EmuraDaisuke/SortingAlgorithm.SetsunaShiki)も併せて読んでいただけると、より楽しめると思います。  
+[刹那式（せつなしき）](https://github.com/EmuraDaisuke/SortingAlgorithm.SetsunaShiki)も併せて読んでいただけると、より楽しめるかも知れません。  
 
 以下の特徴があります。  
 * 比較ソート
