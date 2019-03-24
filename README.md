@@ -206,3 +206,8 @@ However, depending on the environment and input, it may have the potential to su
 Does it come the day when merge sort wins quick sort?  
 
 The sort algorithm is still romantic.  
+
+<br>
+
+---
+It may be fun to read [Setsuna-Shiki](https://github.com/EmuraDaisuke/SortingAlgorithm.SetsunaShiki).
