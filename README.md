@@ -119,8 +119,8 @@ TestMsvc.exe
 clang version 7.0.0 (tags/RELEASE_700/final)  
 Target: x86_64-w64-windows-gnu  
 ~~~
-clang++ Main.cpp -O3 -o TestClang++.exe  
-TestClang++.exe  
+clang++ Main.cpp -O3 -o TestClang++.exe
+TestClang++.exe
 ~~~
 
 ## **g++**
