@@ -1,5 +1,5 @@
-# Hayate-Shiki(颯式)
-Hayate-Shiki(颯式) is an improved merge sort algorithm with the goal of "faster than quick sort".  
+# 颯式(Hayate-Shiki)
+Hayate-Shiki is an improved merge sort algorithm with the goal of "faster than quick sort".  
 
 It has the following features.  
 * Comparison sort
@@ -138,7 +138,7 @@ Sorts float values ​​generated from the same seed.
 The unit is seconds, the lower the number, the faster.  
 
 ## **Msvc**
-|件数|std::sort|std::stable_sort|Hayate-Shiki(颯式)|
+|件数|std::sort|std::stable_sort|Hayate-Shiki|
 |-:|-:|-:|-:|
 |10,000|0.00083858|*0.00069774*|**0.00060311**|
 |1,000,000|0.07069080|*0.06401268*|**0.06192394**|
@@ -148,7 +148,7 @@ Msvc is slower on std :: sort and faster on std :: stable_sort compared to other
 Although the unexpected result came out from the beginning, I was able to win because of this characteristic.  
 
 ## **clang++**
-|件数|std::sort|std::stable_sort|Hayate-Shiki(颯式)|
+|件数|std::sort|std::stable_sort|Hayate-Shiki|
 |-:|-:|-:|-:|
 |10,000|*0.00040838*|0.00044848|**0.00040581**|
 |1,000,000|**0.05941431**|0.06861489|*0.06335664*|
@@ -158,7 +158,7 @@ A disappointing result clang++.
 The need for optimization at the source level has led to doubts about the compiler's optimization logic.  
 
 ## **g++**
-|件数|std::sort|std::stable_sort|Hayate-Shiki(颯式)|
+|件数|std::sort|std::stable_sort|Hayate-Shiki|
 |-:|-:|-:|-:|
 |10,000|0.00041512|0.00045907|**0.00038881**|
 |1,000,000|**0.05990257**|0.06931713|*0.06063945*|
@@ -175,21 +175,21 @@ The following all sorted the array [100,000,000] of float value.
 The unit is seconds, the lower the number, the faster.  
 
 ## Ascending completed
-||std::sort|std::stable_sort|Hayate-Shiki(颯式)|
+||std::sort|std::stable_sort|Hayate-Shiki|
 |-:|-:|-:|-:|
 |Msvc|**0.21892567**|1.25088036|*0.24510241*|
 |clang++|*1.00117798*|1.44316028|**0.25334411**|
 |g++|1.33518179|*1.30792267*|**0.22993043**|
 
 ## Descending completed
-||std::sort|std::stable_sort|Hayate-Shiki(颯式)|
+||std::sort|std::stable_sort|Hayate-Shiki|
 |-:|-:|-:|-:|
 |Msvc|*0.27433638*|1.50812926|**0.26809872**|
 |clang++|*0.92900829*|1.64602567|**0.28246292**|
 |g++|*1.21591655*|1.55615578|**0.25077546**|
 
 ## Constant
-||std::sort|std::stable_sort|Hayate-Shiki(颯式)|
+||std::sort|std::stable_sort|Hayate-Shiki|
 |-:|-:|-:|-:|
 |Msvc|**0.06657813**|1.25241026|*0.24396806*|
 |clang++|*0.97352844*|1.42485664|**0.24551785**|
@@ -200,7 +200,7 @@ The unit is seconds, the lower the number, the faster.
 # Finally
 How was it?  
 
-Hayate-Shiki(颯式) won all over std::stable_sort, but it turns out that it is not easy to win over std::sort.  
+Hayate-Shiki won all over std::stable_sort, but it turns out that it is not easy to win over std::sort.  
 However, depending on the environment and input, it may have the potential to surpass std::sort.  
 
 Does it come the day when merge sort wins quick sort?  
