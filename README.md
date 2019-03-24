@@ -16,9 +16,9 @@ It has the following features.
 # Basic algorithm
 * The external area is regarded as a 2N continuous band.
 * The following rules apply when placing values ​​in the external area.
- * If (maximum <= value), place it above the ascending order column and update the maximum.
- * If (value < minimum), place it below the descending column and update the minimum.
- * If (minimum <= value < maximum), place new values ​​(maximum and minimum) in ascending order column, and let the value group arranged so far be Part.
+  * If (maximum <= value), place it above the ascending order column and update the maximum.
+  * If (value < minimum), place it below the descending column and update the minimum.
+  * If (minimum <= value < maximum), place new values ​​(maximum and minimum) in ascending order column, and let the value group arranged so far be Part.
 * Merge parts.
 
 <br>
