@@ -144,7 +144,7 @@ The unit is seconds, the lower the number, the faster.
 |1,000,000|0.07069080|*0.06401268*|**0.06192394**|
 |100,000,000|8.96780856|*8.58470773*|**8.15964417**|
 
-Msvc is slower on std :: sort and faster on std :: stable_sort compared to other compilers.  
+Msvc is slower on std::sort and faster on std::stable_sort compared to other compilers.  
 Although the unexpected result came out from the beginning, I was able to win because of this characteristic.  
 
 ## **clang++**
