@@ -143,6 +143,7 @@ The unit is seconds, the lower the number, the faster.
 |10,000|0.00083858|*0.00069774*|**0.00060311**|
 |1,000,000|0.07069080|*0.06401268*|**0.06192394**|
 |100,000,000|8.96780856|*8.58470773*|**8.15964417**|
+
 Msvc is slower on std :: sort and faster on std :: stable_sort compared to other compilers.  
 Although the unexpected result came out from the beginning, I was able to win because of this characteristic.  
 
@@ -152,6 +153,7 @@ Although the unexpected result came out from the beginning, I was able to win be
 |10,000|*0.00040838*|0.00044848|**0.00040581**|
 |1,000,000|**0.05941431**|0.06861489|*0.06335664*|
 |100,000,000|**7.61420540**|9.02416852|*8.35873630*|
+
 A disappointing result clang++.  
 The need for optimization at the source level has led to doubts about the compiler's optimization logic.  
 
@@ -161,6 +163,7 @@ The need for optimization at the source level has led to doubts about the compil
 |10,000|0.00041512|0.00045907|**0.00038881**|
 |1,000,000|**0.05990257**|0.06931713|*0.06063945*|
 |100,000,000|**7.63235313**|9.07213184|*7.94998035*|
+
 Good fight was g ++.  
 Even [1,000,000] has become close.  
 The difference in [100,000,000] seems to be the effect of caching efficiency due to in-place or out-place.  
