@@ -138,7 +138,7 @@ Sorts float values ​​generated from the same seed.
 The unit is seconds, the lower the number, the faster.  
 
 ## **Msvc**
-|件数|std::sort|std::stable_sort|Hayate-Shiki|
+|Array|std::sort|std::stable_sort|Hayate-Shiki|
 |-:|-:|-:|-:|
 |10,000|0.00083858|*0.00069774*|**0.00060311**|
 |1,000,000|0.07069080|*0.06401268*|**0.06192394**|
@@ -148,7 +148,7 @@ Msvc is slower on std :: sort and faster on std :: stable_sort compared to other
 Although the unexpected result came out from the beginning, I was able to win because of this characteristic.  
 
 ## **clang++**
-|件数|std::sort|std::stable_sort|Hayate-Shiki|
+|Array|std::sort|std::stable_sort|Hayate-Shiki|
 |-:|-:|-:|-:|
 |10,000|*0.00040838*|0.00044848|**0.00040581**|
 |1,000,000|**0.05941431**|0.06861489|*0.06335664*|
@@ -158,7 +158,7 @@ A disappointing result clang++.
 The need for optimization at the source level has led to doubts about the compiler's optimization logic.  
 
 ## **g++**
-|件数|std::sort|std::stable_sort|Hayate-Shiki|
+|Array|std::sort|std::stable_sort|Hayate-Shiki|
 |-:|-:|-:|-:|
 |10,000|0.00041512|0.00045907|**0.00038881**|
 |1,000,000|**0.05990257**|0.06931713|*0.06063945*|
