@@ -118,7 +118,7 @@ constexpr std::size_t nIns = Bit(bIns);
 
 // 
 
-template <class T> void Sort(T* const aSrc, std::size_t nSrc);
+template <class T> void Sort(T* const aSrc, std::size_t nSrc, T* const aExt = nullptr);
 
 template <class T> std::size_t Num(T* a, T* e);
 
@@ -136,10 +136,10 @@ template <class T> T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc);
 // 
 
 template <class T>
-void Sort(T* const aSrc, std::size_t nSrc)
+void Sort(T* const aSrc, std::size_t nSrc, T* const aExt)
 {
     if (aSrc && nSrc > 1){
-        auto aTmp = new T[nSrc];
+        auto aTmp = (aExt)? aExt: new T[nSrc];
         
         Auto nDive = LowerLimit((MsbAlignment(nSrc) - bIns), 1);
         Auto aDive = local_array(Dive<T>, (nDive+1));
@@ -201,7 +201,7 @@ void Sort(T* const aSrc, std::size_t nSrc)
             }
         }
         
-        delete[] aTmp;
+        if (aExt == nullptr) delete[] aTmp;
     }
 }
 
