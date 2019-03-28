@@ -163,7 +163,11 @@ void Sort(T* const aSrc, std::size_t nSrc, T* const aExt)
                             pSrc = InitPart(&vPart1, pSrc, eSrc, &aDsc);
                             pJoin = Join(pJoin, &vUnit, &vPart0, &vPart1);
                         } else {
-                            pJoin = Join(pJoin, &vUnit, &vPart0);
+                            if (nJoin){
+                                pJoin = Join(pJoin, &vUnit, &vPart0);
+                            } else {
+                                break;
+                            }
                         }
                     }
                     
@@ -179,7 +183,7 @@ void Sort(T* const aSrc, std::size_t nSrc, T* const aExt)
                 }
             }
             
-            {   // 
+            if (nJoin){
                 auto bJoin = nJoin & -nJoin;
                 auto oDive = Msb(bJoin);
                 auto pResult = &aDive[oDive++];
