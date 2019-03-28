@@ -163,7 +163,7 @@ void Sort(T* const aSrc, std::size_t nSrc, T* const aExt)
                             pSrc = InitPart(&vPart1, pSrc, eSrc, &aDsc);
                             pJoin = Join(pJoin, &vUnit, &vPart0, &vPart1);
                         } else {
-                            if (nJoin){
+                            if (vPart0.n[Part<T>::oUnit_Asc] < nSrc){
                                 pJoin = Join(pJoin, &vUnit, &vPart0);
                             } else {
                                 break;
