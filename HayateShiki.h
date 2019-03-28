@@ -27,6 +27,7 @@
 
 
 namespace HayateShiki {
+namespace Private {
 
 
 
@@ -118,8 +119,6 @@ constexpr std::size_t nIns = Bit(bIns);
 
 // 
 
-template <class T> void Sort(T* const aSrc, std::size_t nSrc, T* const aExt = nullptr);
-
 template <class T> std::size_t Num(T* a, T* e);
 
 template <class T> T* Copy(T* pDst, T* pSrc, std::size_t nSrc);
@@ -134,82 +133,6 @@ template <class T> T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc);
 
 
 // 
-
-template <class T>
-void Sort(T* const aSrc, std::size_t nSrc, T* const aExt)
-{
-    if (aSrc && nSrc > 1){
-        auto aTmp = (aExt)? aExt: new T[nSrc];
-        
-        Auto nDive = LowerLimit((MsbAlignment(nSrc) - bIns), 1);
-        Auto aDive = local_array(Dive<T>, (nDive+1));
-        for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].mpJoin = (oDive & Bit(0))? aTmp: aSrc;
-        
-        {   // 
-            std::size_t nJoin = 0;
-            
-            {   // 
-                auto pJoin = aTmp;
-                
-                auto pSrc = &aSrc[0];
-                auto eSrc = &aSrc[nSrc];
-                while (pSrc){
-                    Unit<T> vUnit;
-                    
-                    {   // 
-                        Part<T> vPart0, vPart1;
-                        auto aDsc = &aTmp[nSrc];
-                        if ((pSrc = InitPart(&vPart0, pSrc, eSrc, &aDsc))){
-                            pSrc = InitPart(&vPart1, pSrc, eSrc, &aDsc);
-                            pJoin = Join(pJoin, &vUnit, &vPart0, &vPart1);
-                        } else {
-                            if (vPart0.n[Part<T>::oUnit_Asc] < nSrc){
-                                pJoin = Join(pJoin, &vUnit, &vPart0);
-                            } else {
-                                break;
-                            }
-                        }
-                    }
-                    
-                    {   // 
-                        auto pDive = &aDive[0];
-                        auto Carry = nJoin++;
-                        Carry = (nJoin ^ Carry) & Carry;
-                        for (; Carry; Carry >>= 1, ++pDive){
-                            pDive->mpJoin = Join(pDive->mpJoin, &vUnit, &pDive->mUnit, &vUnit);
-                        }
-                        pDive->mUnit = vUnit;
-                    }
-                }
-            }
-            
-            if (nJoin){
-                auto bJoin = nJoin & -nJoin;
-                auto oDive = Msb(bJoin);
-                auto pResult = &aDive[oDive++];
-                
-                {   // 
-                    auto pDive = &aDive[oDive];
-                    auto Carry = nJoin ^ bJoin;
-                    Carry >>= oDive;
-                    for (; Carry; Carry >>= 1, ++pDive){
-                        if (Carry & Bit(0)){
-                            Join(pDive->mpJoin, &pResult->mUnit, &pDive->mUnit, &pResult->mUnit);
-                        }
-                    }
-                }
-                
-                if (pResult->mUnit.a == aTmp){
-                    Copy(aSrc, pResult->mUnit.a, pResult->mUnit.n);
-                }
-            }
-        }
-        
-        if (aExt == nullptr) delete[] aTmp;
-    }
-}
-
-
 
 template <class T>
 std::size_t Num(T* a, T* e)
@@ -428,7 +351,99 @@ T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc)
         }
     }
 }
-
-
-
 }
+
+
+
+// 
+
+template <class T> void Sort(T* const aSrc, std::size_t nSrc, T* const aExt = nullptr);
+
+
+
+// 
+
+template <class T>
+void Sort(T* const aSrc, std::size_t nSrc, T* const aExt)
+{
+    using namespace Private;
+    
+    if (aSrc && nSrc > 1){
+        auto aTmp = (aExt)? aExt: new T[nSrc];
+        
+        Auto nDive = LowerLimit((MsbAlignment(nSrc) - bIns), 1);
+        Auto aDive = local_array(Dive<T>, (nDive+1));
+        for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].mpJoin = (oDive & Bit(0))? aTmp: aSrc;
+        
+        {   // 
+            std::size_t nJoin = 0;
+            
+            {   // 
+                auto pJoin = aTmp;
+                
+                auto pSrc = &aSrc[0];
+                auto eSrc = &aSrc[nSrc];
+                while (pSrc){
+                    Unit<T> vUnit;
+                    
+                    {   // 
+                        Part<T> vPart0, vPart1;
+                        auto aDsc = &aTmp[nSrc];
+                        if ((pSrc = InitPart(&vPart0, pSrc, eSrc, &aDsc))){
+                            pSrc = InitPart(&vPart1, pSrc, eSrc, &aDsc);
+                            pJoin = Join(pJoin, &vUnit, &vPart0, &vPart1);
+                        } else {
+                            if (vPart0.n[Part<T>::oUnit_Asc] < nSrc){
+                                pJoin = Join(pJoin, &vUnit, &vPart0);
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                    
+                    {   // 
+                        auto pDive = &aDive[0];
+                        auto Carry = nJoin++;
+                        Carry = (nJoin ^ Carry) & Carry;
+                        for (; Carry; Carry >>= 1, ++pDive){
+                            pDive->mpJoin = Join(pDive->mpJoin, &vUnit, &pDive->mUnit, &vUnit);
+                        }
+                        pDive->mUnit = vUnit;
+                    }
+                }
+            }
+            
+            if (nJoin){
+                auto bJoin = nJoin & -nJoin;
+                auto oDive = Msb(bJoin);
+                auto pResult = &aDive[oDive++];
+                
+                {   // 
+                    auto pDive = &aDive[oDive];
+                    auto Carry = nJoin ^ bJoin;
+                    Carry >>= oDive;
+                    for (; Carry; Carry >>= 1, ++pDive){
+                        if (Carry & Bit(0)){
+                            Join(pDive->mpJoin, &pResult->mUnit, &pDive->mUnit, &pResult->mUnit);
+                        }
+                    }
+                }
+                
+                if (pResult->mUnit.a == aTmp){
+                    Copy(aSrc, pResult->mUnit.a, pResult->mUnit.n);
+                }
+            }
+        }
+        
+        if (aExt == nullptr) delete[] aTmp;
+    }
+}
+}
+
+
+
+#undef Continue
+
+#undef Auto
+#undef local_alloc
+#undef local_array
