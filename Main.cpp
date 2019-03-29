@@ -97,7 +97,7 @@ void test(eSrc Src, int nTest, int nLoop)
 {
     std::random_device Seed;
     std::mt19937 Rand(Seed());
-    std::uniform_int_distribution<> Range(0, nTest-1);
+    std::uniform_int_distribution<> Range(0, std::numeric_limits<int>::max());
     auto a = std::vector<Test>(nTest);
     
     static const char* apSrc[eSrc::Num]={
@@ -181,12 +181,12 @@ void test(eSrc Src, int nTest, int nLoop)
 
 int main(int argc, char* argv[])
 {
-    test(eSrc::Rand,     10000, 100);
+    test(eSrc::Rand,     10000, 1000);
     test(eSrc::Rand,   1000000, 100);
-    test(eSrc::Rand, 100000000, 100);
+    test(eSrc::Rand, 100000000, 10);
     
-    test(eSrc::Inc,  100000000, 100);
-    test(eSrc::Dec,  100000000, 100);
-    test(eSrc::Flat, 100000000, 100);
+    test(eSrc::Inc,  100000000, 10);
+    test(eSrc::Dec,  100000000, 10);
+    test(eSrc::Flat, 100000000, 10);
     return 0;
 }
