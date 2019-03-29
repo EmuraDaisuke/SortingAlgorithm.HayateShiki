@@ -185,8 +185,8 @@ int main(int argc, char* argv[])
     test(eSrc::Rand,   1000000, 100);
     test(eSrc::Rand, 100000000, 10);
     
-    test(eSrc::Inc,  100000000, 10);
-    test(eSrc::Dec,  100000000, 10);
-    test(eSrc::Flat, 100000000, 10);
+    test(eSrc::Inc,  100000000, 5);
+    test(eSrc::Dec,  100000000, 5);
+    test(eSrc::Flat, 100000000, 5);
     return 0;
 }
