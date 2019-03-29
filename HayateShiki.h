@@ -302,61 +302,50 @@ T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc)
     }
     
     {   // 
+        auto aDsc = *paDsc;
+        auto eDsc = aDsc;
+        
         auto pOdd = eAsc;
         auto nOdd = Num(pOdd, eSrc);
         if (nOdd){
-            auto aDsc = *paDsc;
-            auto eDsc = aDsc;
+            auto pMin = &aAsc[0];
+            auto pMax = &eAsc[-1];
             
-            {   // 
-                auto pMin = &aAsc[0];
-                auto pMax = &eAsc[-1];
+            if (*pOdd < *pMin){
+                {   // 
+                    *--aDsc = std::move(*pOdd++);
+                    pMin = aDsc;
+                }
                 
-                if (*pOdd < *pMin){
-                    {   // 
-                        *--aDsc = std::move(*pOdd++);
-                        pMin = aDsc;
-                    }
-                    
-                    while (--nOdd){
-                        if (*pOdd < *pMax){
-                            if (*pOdd < *pMin){
-                                *--aDsc = std::move(*pOdd++);
-                                pMin = aDsc;
-                                Continue;
-                            } else {
-                                break;
-                            }
-                        } else {
-                            pMax = eAsc;
-                            *eAsc++ = std::move(*pOdd++);
+                while (--nOdd){
+                    if (*pOdd < *pMax){
+                        if (*pOdd < *pMin){
+                            *--aDsc = std::move(*pOdd++);
+                            pMin = aDsc;
                             Continue;
+                        } else {
+                            break;
                         }
+                    } else {
+                        pMax = eAsc;
+                        *eAsc++ = std::move(*pOdd++);
+                        Continue;
                     }
                 }
             }
-            
-            {   // 
-                Auto nDsc = Num(aDsc, eDsc);
-                pPart->a[Part<T>::oUnit_Asc] = aAsc;
-                pPart->n[Part<T>::oUnit_Asc] = Num(aAsc, eAsc);
-                pPart->a[Part<T>::oUnit_Dsc] = aDsc;
-                pPart->n[Part<T>::oUnit_Dsc] = nDsc;
-                pPart->o = (nDsc)? Part<T>::oUnit_Dsc: Part<T>::oUnit_Asc;
-            }
-            
-            *paDsc = aDsc;
-            return (nOdd)? pOdd: nullptr;
-        } else {
-            {   // 
-                pPart->a[Part<T>::oUnit_Asc] = aAsc;
-                pPart->n[Part<T>::oUnit_Asc] = Num(aAsc, eAsc);
-                pPart->a[Part<T>::oUnit_Dsc] = nullptr;
-                pPart->n[Part<T>::oUnit_Dsc] = 0;
-                pPart->o = Part<T>::oUnit_Asc;
-            }
-            return nullptr;
         }
+        
+        {   // 
+            Auto nDsc = Num(aDsc, eDsc);
+            pPart->a[Part<T>::oUnit_Asc] = aAsc;
+            pPart->n[Part<T>::oUnit_Asc] = Num(aAsc, eAsc);
+            pPart->a[Part<T>::oUnit_Dsc] = aDsc;
+            pPart->n[Part<T>::oUnit_Dsc] = nDsc;
+            pPart->o = (nDsc)? Part<T>::oUnit_Dsc: Part<T>::oUnit_Asc;
+        }
+        
+        *paDsc = aDsc;
+        return (nOdd)? pOdd: nullptr;
     }
 }
 }
