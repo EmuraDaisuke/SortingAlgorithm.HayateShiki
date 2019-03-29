@@ -279,79 +279,78 @@ T* Join(T* aJoin, Unit<T>* pUnit, Unit<T>* pUnit0, Unit<T>* pUnit1)
 template <class T>
 T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc)
 {
-    Auto nSrc = Num(pSrc, eSrc);
-    nSrc = (nSrc < nIns)? nSrc: nIns;
+    auto aAsc = pSrc;
+    auto eAsc = aAsc;
     
     {   // 
-        auto aIns = pSrc;
-        auto eIns = pSrc + nSrc;
-        while (++aIns < eIns){
-            if (aIns[0] < aIns[-1]){
-                auto pIns = aIns;
+        Auto nSrc = Num(pSrc, eSrc);
+        
+        auto aIns = &pSrc[0];
+        auto eIns = &pSrc[(nSrc < nIns)? nSrc: nIns];
+        while (++eAsc < eIns){
+            if (eAsc[0] < eAsc[-1]){
+                auto pIns = eAsc;
                 auto v = std::move(pIns[0]);
                 do {
                     pIns[0] = std::move(pIns[-1]);
-                } while (--pIns > pSrc && v < pIns[-1]);
+                } while (--pIns > aIns && v < pIns[-1]);
                 pIns[0] = std::move(v);
             }
         }
+        
+        for (; (eAsc < eSrc) && !(eAsc[0] < eAsc[-1]); ++eAsc);
     }
     
     {   // 
-        auto pOdd = &pSrc[nSrc];
+        auto pOdd = eAsc;
         auto nOdd = Num(pOdd, eSrc);
         if (nOdd){
             auto aDsc = *paDsc;
             auto eDsc = aDsc;
             
             {   // 
-                auto aAsc = pSrc;
-                for (; nOdd && !(pOdd[0] < pOdd[-1]); --nOdd, ++pOdd);
-                auto eAsc = pOdd;
+                auto pMin = &aAsc[0];
+                auto pMax = &eAsc[-1];
                 
-                if (nOdd){
-                    auto pMin = &pSrc[0];
-                    auto pMax = &pOdd[-1];
+                if (*pOdd < *pMin){
+                    {   // 
+                        *--aDsc = std::move(*pOdd++);
+                        pMin = aDsc;
+                    }
                     
-                    if (*pOdd < *pMin){
-                        {   // 
-                            *--aDsc = std::move(*pOdd++);
-                            pMin = aDsc;
-                        }
-                        
-                        for (; --nOdd; ++pOdd){
-                            if (*pOdd < *pMax){
-                                if (*pOdd < *pMin){
-                                    *--aDsc = std::move(*pOdd);
-                                    pMin = aDsc;
-                                    Continue;
-                                } else {
-                                    break;
-                                }
-                            } else {
-                                pMax = eAsc;
-                                *eAsc++ = std::move(*pOdd);
+                    while (--nOdd){
+                        if (*pOdd < *pMax){
+                            if (*pOdd < *pMin){
+                                *--aDsc = std::move(*pOdd++);
+                                pMin = aDsc;
                                 Continue;
+                            } else {
+                                break;
                             }
+                        } else {
+                            pMax = eAsc;
+                            *eAsc++ = std::move(*pOdd++);
+                            Continue;
                         }
                     }
                 }
-                pPart->a[Part<T>::oUnit_Asc] = aAsc;
-                pPart->n[Part<T>::oUnit_Asc] = Num(aAsc, eAsc);
             }
             
             {   // 
                 Auto nDsc = Num(aDsc, eDsc);
+                pPart->a[Part<T>::oUnit_Asc] = aAsc;
+                pPart->n[Part<T>::oUnit_Asc] = Num(aAsc, eAsc);
                 pPart->a[Part<T>::oUnit_Dsc] = aDsc;
                 pPart->n[Part<T>::oUnit_Dsc] = nDsc;
                 pPart->o = (nDsc)? Part<T>::oUnit_Dsc: Part<T>::oUnit_Asc;
-                *paDsc = aDsc;
             }
+            
+            *paDsc = aDsc;
             return (nOdd)? pOdd: nullptr;
         } else {
             {   // 
-                pPart->a[Part<T>::oUnit_Asc] = pSrc;
-                pPart->n[Part<T>::oUnit_Asc] = nSrc;
+                pPart->a[Part<T>::oUnit_Asc] = aAsc;
+                pPart->n[Part<T>::oUnit_Asc] = Num(aAsc, eAsc);
                 pPart->a[Part<T>::oUnit_Dsc] = nullptr;
                 pPart->n[Part<T>::oUnit_Dsc] = 0;
                 pPart->o = Part<T>::oUnit_Asc;
