@@ -308,26 +308,18 @@ T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc)
         auto pOdd = eAsc;
         auto nOdd = Num(pOdd, eSrc);
         if (nOdd){
-            auto pMin = &aAsc[0];
-            auto pMax = &eAsc[-1];
-            
-            if (*pOdd < *pMin){
-                {   // 
-                    *--aDsc = std::move(*pOdd++);
-                    pMin = aDsc;
-                }
+            if (*pOdd < aAsc[0]/*Min*/){
+                *--aDsc = std::move(*pOdd++);
                 
                 while (--nOdd){
-                    if (*pOdd < *pMax){
-                        if (*pOdd < *pMin){
+                    if (*pOdd < eAsc[-1]/*Max*/){
+                        if (*pOdd < aDsc[0]/*Min*/){
                             *--aDsc = std::move(*pOdd++);
-                            pMin = aDsc;
                             Continue;
                         } else {
                             break;
                         }
                     } else {
-                        pMax = eAsc;
                         *eAsc++ = std::move(*pOdd++);
                         Continue;
                     }
