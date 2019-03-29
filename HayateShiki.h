@@ -283,11 +283,6 @@ T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc)
     nSrc = (nSrc < nIns)? nSrc: nIns;
     
     {   // 
-        pPart->a[Part<T>::oUnit_Asc] = pSrc;
-        pPart->n[Part<T>::oUnit_Asc] = nSrc;
-    }
-    
-    {   // 
         auto aIns = pSrc;
         auto eIns = pSrc + nSrc;
         while (++aIns < eIns){
@@ -310,27 +305,39 @@ T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc)
             auto eDsc = aDsc;
             
             {   // 
-                auto pMin = &pSrc[0];
-                auto pMax = &pSrc[nSrc-1];
+                auto aAsc = pSrc;
+                for (; nOdd && !(pOdd[0] < pOdd[-1]); --nOdd, ++pOdd);
+                auto eAsc = pOdd;
                 
-                auto aAsc = pOdd;
-                auto eAsc = aAsc;
-                for (; nOdd; --nOdd, ++pOdd){
-                    if (*pOdd < *pMax){
-                        if (*pOdd < *pMin){
-                            *--aDsc = std::move(*pOdd);
+                if (nOdd){
+                    auto pMin = &pSrc[0];
+                    auto pMax = &pOdd[-1];
+                    
+                    if (*pOdd < *pMin){
+                        {   // 
+                            *--aDsc = std::move(*pOdd++);
                             pMin = aDsc;
-                            Continue;
-                        } else {
-                            break;
                         }
-                    } else {
-                        pMax = eAsc;
-                        *eAsc++ = std::move(*pOdd);
-                        Continue;
+                        
+                        for (; --nOdd; ++pOdd){
+                            if (*pOdd < *pMax){
+                                if (*pOdd < *pMin){
+                                    *--aDsc = std::move(*pOdd);
+                                    pMin = aDsc;
+                                    Continue;
+                                } else {
+                                    break;
+                                }
+                            } else {
+                                pMax = eAsc;
+                                *eAsc++ = std::move(*pOdd);
+                                Continue;
+                            }
+                        }
                     }
                 }
-                pPart->n[Part<T>::oUnit_Asc] += Num(aAsc, eAsc);
+                pPart->a[Part<T>::oUnit_Asc] = aAsc;
+                pPart->n[Part<T>::oUnit_Asc] = Num(aAsc, eAsc);
             }
             
             {   // 
@@ -343,6 +350,8 @@ T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc)
             return (nOdd)? pOdd: nullptr;
         } else {
             {   // 
+                pPart->a[Part<T>::oUnit_Asc] = pSrc;
+                pPart->n[Part<T>::oUnit_Asc] = nSrc;
                 pPart->a[Part<T>::oUnit_Dsc] = nullptr;
                 pPart->n[Part<T>::oUnit_Dsc] = 0;
                 pPart->o = Part<T>::oUnit_Asc;
