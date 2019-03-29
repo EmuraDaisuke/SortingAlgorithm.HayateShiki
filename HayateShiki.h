@@ -11,13 +11,10 @@
 #if _MSC_VER//[
 // msvc
 #define alloca      _alloca
-#define Continue    // nop
 #elif __clang__//][
 // clang
-#define Continue    continue
 #else//][
 // gcc
-#define Continue    // nop
 #endif//]
 
 #define Auto                decltype(auto)
@@ -194,14 +191,12 @@ T* Join(T* aJoin, Unit<T>* pUnit, Part<T>* pPart0, Part<T>* pPart1)
             *pJoin++ = std::move(v1);
             if (--n1){
                 v1 = std::move(*++p1);
-                Continue;
             } else {
                 if (o1){
                     o1 = Part<T>::oUnit_Asc;
                     p1 = pPart1->a[o1];
                     n1 = pPart1->n[o1];
                     v1 = std::move(*p1);
-                    Continue;
                 } else {
                     pJoin = Copy(pJoin, p0, n0, v0);
                     if (o0) pJoin = Copy(pJoin, pPart0->a[Part<T>::oUnit_Asc], pPart0->n[Part<T>::oUnit_Asc]);
@@ -212,14 +207,12 @@ T* Join(T* aJoin, Unit<T>* pUnit, Part<T>* pPart0, Part<T>* pPart1)
             *pJoin++ = std::move(v0);
             if (--n0){
                 v0 = std::move(*++p0);
-                Continue;
             } else {
                 if (o0){
                     o0 = Part<T>::oUnit_Asc;
                     p0 = pPart0->a[o0];
                     n0 = pPart0->n[o0];
                     v0 = std::move(*p0);
-                    Continue;
                 } else {
                     pJoin = Copy(pJoin, p1, n1, v1);
                     if (o1) pJoin = Copy(pJoin, pPart1->a[Part<T>::oUnit_Asc], pPart1->n[Part<T>::oUnit_Asc]);
@@ -252,7 +245,6 @@ T* Join(T* aJoin, Unit<T>* pUnit, Unit<T>* pUnit0, Unit<T>* pUnit1)
             *pJoin++ = std::move(v1);
             if (--n1){
                 v1 = std::move(*++p1);
-                Continue;
             } else {
                 pJoin = Copy(pJoin, p0, n0, v0);
                 break;
@@ -261,7 +253,6 @@ T* Join(T* aJoin, Unit<T>* pUnit, Unit<T>* pUnit0, Unit<T>* pUnit1)
             *pJoin++ = std::move(v0);
             if (--n0){
                 v0 = std::move(*++p0);
-                Continue;
             } else {
                 pJoin = Copy(pJoin, p1, n1, v1);
                 break;
@@ -315,13 +306,11 @@ T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc)
                     if (*pOdd < eAsc[-1]/*Max*/){
                         if (*pOdd < aDsc[0]/*Min*/){
                             *--aDsc = std::move(*pOdd++);
-                            Continue;
                         } else {
                             break;
                         }
                     } else {
                         *eAsc++ = std::move(*pOdd++);
-                        Continue;
                     }
                 }
             }
@@ -430,8 +419,6 @@ void Sort(T* const aSrc, std::size_t nSrc, T* const aExt)
 }
 
 
-
-#undef Continue
 
 #undef Auto
 #undef local_alloc
