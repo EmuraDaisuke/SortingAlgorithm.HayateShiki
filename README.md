@@ -159,7 +159,7 @@ Compared to other compilers, the optimization logic resulted in questionable res
 ## **g++**
 |Array|std::sort|std::stable_sort|Hayate-Shiki|
 |-:|-:|-:|-:|
-|10,000|0.00039960|0.00044316|**0.00037901**|
+|10,000|*0.00039960*|0.00044316|**0.00037901**|
 |1,000,000|**0.05772615**|0.06574962|*0.05814465*|
 |100,000,000|**7.59918096**|8.88065410|*7.81997089*|
 
