@@ -201,4 +201,4 @@ std::stable_sortには全勝したものの、std::sortに常勝するのは容�
 ソートアルゴリズムには、まだ浪漫が残っています。  
 
 ---
-[刹那式（せつなしき）](https://github.com/EmuraDaisuke/SortingAlgorithm.SetsunaShiki)も併せて読んでいただけると、より楽しめるかも知れません。  
+[刹那式（せつなしき）](https://github.com/EmuraDaisuke/SortingAlgorithm.SetsunaShiki)と[焔式（ほむらしき）](https://github.com/EmuraDaisuke/SortingAlgorithm.SetsunaShiki)も併せて読んでいただけると、より楽しめるかも知れません。  
