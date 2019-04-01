@@ -209,4 +209,6 @@ The sort algorithm is still romantic.
 <br>
 
 ---
-It may be fun to read [Setsuna-Shiki](https://github.com/EmuraDaisuke/SortingAlgorithm.SetsunaShiki).
+It may be more enjoyable if you read the following together.  
+* [Setsuna-Shiki](https://github.com/EmuraDaisuke/SortingAlgorithm.SetsunaShiki)
+* [Homura-Shiki](https://github.com/EmuraDaisuke/SortingAlgorithm.HomuraShiki)
