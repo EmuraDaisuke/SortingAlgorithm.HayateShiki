@@ -127,6 +127,8 @@ template <class T> T* Join(T* aJoin, Unit<T>* pUnit, Unit<T>* pUnit0, Unit<T>* p
 
 template <class T> T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc);
 
+template <class T> void Turn(T* pDst, Part<T>* pPart);
+
 
 
 // 
@@ -329,6 +331,22 @@ T* InitPart(Part<T>* pPart, T* pSrc, T* eSrc, T** paDsc)
         return (nOdd)? pOdd: nullptr;
     }
 }
+
+
+
+template <class T>
+void Turn(T* pDst, Part<T>* pPart)
+{
+    auto nDsc = pPart->n[Part<T>::oUnit_Dsc];
+    auto nAsc = pPart->n[Part<T>::oUnit_Asc];
+    auto aDsc = &pDst[0];
+    auto aAsc = &pDst[nDsc];
+    
+    if (nDsc){
+        Copy(aAsc, pPart->a[Part<T>::oUnit_Asc], nAsc);
+        Copy(aDsc, pPart->a[Part<T>::oUnit_Dsc], nDsc);
+    }
+}
 }
 
 
@@ -371,9 +389,10 @@ void Sort(T* const aSrc, std::size_t nSrc, T* const aExt)
                             pSrc = InitPart(&vPart1, pSrc, eSrc, &aDsc);
                             pJoin = Join(pJoin, &vUnit, &vPart0, &vPart1);
                         } else {
-                            if (vPart0.n[Part<T>::oUnit_Asc] < nSrc){
+                            if (nJoin){
                                 pJoin = Join(pJoin, &vUnit, &vPart0);
                             } else {
+                                Turn(aSrc, &vPart0);
                                 break;
                             }
                         }
