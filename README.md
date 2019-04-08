@@ -110,7 +110,7 @@ The following environment has been verified.
 ## **Msvc**
 Microsoft(R) C/C++ Optimizing Compiler Version 19.16.27027.1 for x64  
 ~~~
-cl Main.cpp -Ox -EHsc -Fe:TestMsvc.exe
+cl Main.cpp -std:c++14 -DNDEBUG -Ox -EHsc -Fe:TestMsvc.exe
 TestMsvc.exe
 ~~~
 
@@ -118,7 +118,7 @@ TestMsvc.exe
 clang version 8.0.0 (tags/RELEASE_800/final)  
 Target: x86_64-w64-windows-gnu  
 ~~~
-clang++ Main.cpp -O3 -o TestClang++.exe
+clang++ Main.cpp -std=c++14 -DNDEBUG -O3 -o TestClang++.exe
 TestClang++.exe
 ~~~
 
@@ -126,7 +126,7 @@ TestClang++.exe
 gcc version 8.3.0 (Rev2, Built by MSYS2 project)  
 Target: x86_64-w64-mingw32  
 ~~~
-g++ Main.cpp -O3 -o TestG++.exe
+g++ Main.cpp -std=c++14 -DNDEBUG -O3 -o TestG++.exe
 TestG++.exe
 ~~~
 
