@@ -137,31 +137,31 @@ Sorts float values ​​generated from the same seed.
 The unit is seconds, the lower the number, the faster.  
 
 ## **Msvc**
-|Array|std::sort|std::stable_sort|Hayate-Shiki|
-|-:|-:|-:|-:|
-|10,000|0.00045536|*0.00038941*|**0.00037852**|
-|1,000,000|0.06819912|*0.06096062*|**0.05916414**|
-|100,000,000|8.96064778|*8.46867757*|**7.98070745**|
+|Array|std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
+|-:|-:|-:|-:|-:|
+|10,000|0.00045311|0.00038742|0.00062179|**0.00037810**|
+|1,000,000|0.06826439|0.06116140|0.08895712|**0.05941663**|
+|100,000,000|8.99102733|8.54398624|11.82235680|**8.03245842**|
 
 Msvc is slower on std::sort and faster on std::stable_sort compared to other compilers.  
 Although the unexpected result came out from the beginning, I was able to win because of this characteristic.  
 
 ## **clang++**
-|Array|std::sort|std::stable_sort|Hayate-Shiki|
-|-:|-:|-:|-:|
-|10,000|**0.00039862**|0.00044817|*0.00040551*|
-|1,000,000|**0.05683699**|0.06662549|*0.06324214*|
-|100,000,000|**7.49816192**|9.04147304|*8.59871994*|
+|Array|std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
+|-:|-:|-:|-:|-:|
+|10,000|0.00039968|0.00044068|0.00058889|**0.00039942**|
+|1,000,000|**0.05761442**|0.06629626|0.08213553|0.06319817|
+|100,000,000|**7.65998188**|9.02074948|10.78835585|8.59167794|
 
 A disappointing result clang++.  
 Compared to other compilers, the optimization logic resulted in questionable results.  
 
 ## **g++**
-|Array|std::sort|std::stable_sort|Hayate-Shiki|
-|-:|-:|-:|-:|
-|10,000|*0.00039960*|0.00044316|**0.00037901**|
-|1,000,000|**0.05772615**|0.06574962|*0.05814465*|
-|100,000,000|**7.59918096**|8.88065410|*7.81997089*|
+|Array|std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
+|-:|-:|-:|-:|-:|
+|10,000|0.00039925|0.00043802|0.00063139|**0.00037335**|
+|1,000,000|**0.05770632**|0.06557444|0.08941936|0.05796241|
+|100,000,000|**7.65302426**|8.93940243|11.55346838|7.82881867|
 
 Good fight was g ++.  
 Even [1,000,000] has become close.  
@@ -174,25 +174,25 @@ The following all sorted the array [100,000,000] of float value.
 The unit is seconds, the lower the number, the faster.  
 
 ## Ascending completed
-||std::sort|std::stable_sort|Hayate-Shiki|
-|-:|-:|-:|-:|
-|Msvc|*0.26107338*|1.25014420|**0.03538870**|
-|clang++|*0.99078740*|1.40538212|**0.05113556**|
-|g++|1.28421660|*1.27630620*|**0.05116902**|
+||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
+|-:|-:|-:|-:|-:|
+|Msvc|1.05746516|1.26163644|0.04702674|**0.03562770**|
+|clang++|1.03520472|1.46043022|**0.03555822**|0.05057494|
+|g++|1.42474874|1.27932342|0.04135430|**0.03995162**|
 
 ## Descending completed
-||std::sort|std::stable_sort|Hayate-Shiki|
-|-:|-:|-:|-:|
-|Msvc|*0.31468252*|1.49977530|**0.25392970**|
-|clang++|*0.92231022*|1.60681828|**0.28883200**|
-|g++|*1.19012066*|1.50984774|**0.27091510**|
+||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
+|-:|-:|-:|-:|-:|
+|Msvc|1.24606222|1.63625282|**0.05934068**|0.24938872|
+|clang++|0.74098110|1.53675010|**0.07881390**|0.22430168|
+|g++|1.04665430|1.51179186|**0.07844204**|0.23485550|
 
 ## Constant
-||std::sort|std::stable_sort|Hayate-Shiki|
-|-:|-:|-:|-:|
-|Msvc|*0.06598216*|1.24120276|**0.03532978**|
-|clang++|*0.96483422*|1.39459960|**0.05167836**|
-|g++|*1.23251518*|1.26547230|**0.05145242**|
+||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
+|-:|-:|-:|-:|-:|
+|Msvc|0.06700882|1.26402688|0.04671364|**0.03510426**|
+|clang++|0.96671638|1.46089826|**0.03567136**|0.05064882|
+|g++|1.25442060|1.28246388|0.04092334|**0.03981956**|
 
 <br>
 
