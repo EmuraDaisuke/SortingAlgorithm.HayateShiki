@@ -23,6 +23,10 @@ enum eSrc {
 
 using sort_t = float;
 
+int precision(int v){ return 1; }
+float precision(float v){ return (v/0x00ffffff); }
+double precision(double v){ return (v/0x000fffffffffffff); }
+
 
 
 #define ORDER   0
@@ -73,17 +77,17 @@ void init(eSrc Src, std::vector<Test>& a, std::mt19937& rRand, std::uniform_int_
                 break;
             }
             case eSrc::Inc:{
-                sort_t m = 0;
-                for (auto& v : a) v.m = ++m;
+                sort_t m = 1;
+                for (auto& v : a){ v.m = m; m += precision(m); }
                 break;
             }
             case eSrc::Dec:{
-                sort_t m = 0;
-                for (auto& v : a) v.m = --m;
+                sort_t m = 1;
+                for (auto& v : a){ v.m = -m; m += precision(m); }
                 break;
             }
             case eSrc::Flat:{
-                sort_t m = 0;
+                sort_t m = 1;
                 for (auto& v : a) v.m = m;
                 break;
             }
@@ -106,7 +110,7 @@ void test(eSrc Src, int nTest, int nLoop)
         "Dec",
         "Flat",
     };
-    printf("\n\n--- %s %d\n", apSrc[Src], nTest);
+    printf("\n--- %s %d\n", apSrc[Src], nTest);
     
     #if 1//[
     {   // 
