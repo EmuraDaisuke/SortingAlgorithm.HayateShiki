@@ -125,7 +125,7 @@ template <class T> T* Join(T* pJoin, Unit<T>& rUnit, const Part<T>& rPart);
 template <class T> T* Join(T* aJoin, Unit<T>& rUnit, const Part<T>& rPart0, const Part<T>& rPart1);
 template <class T> T* Join(T* aJoin, Unit<T>& rUnit, const Unit<T>& rUnit0, const Unit<T>& rUnit1);
 
-template <class T> T* InitPart(Part<T>& rPart, T* pSrc, T* eSrc, T*& raDsc);
+template <class T> T* MakePart(Part<T>& rPart, T* pSrc, T* eSrc, T*& raDsc);
 
 template <class T> void Turn(T* pDst, const Part<T>& rPart);
 
@@ -270,7 +270,7 @@ T* Join(T* aJoin, Unit<T>& rUnit, const Unit<T>& rUnit0, const Unit<T>& rUnit1)
 
 
 template <class T>
-T* InitPart(Part<T>& rPart, T* pSrc, T* eSrc, T*& raDsc)
+T* MakePart(Part<T>& rPart, T* pSrc, T* eSrc, T*& raDsc)
 {
     auto aAsc = pSrc;
     auto eAsc = aAsc;
@@ -385,8 +385,8 @@ void Sort(T* const aSrc, std::size_t nSrc, T* const aExt)
                     {   // 
                         Part<T> vPart0, vPart1;
                         auto aDsc = &aTmp[nSrc];
-                        if ((pSrc = InitPart(vPart0, pSrc, eSrc, aDsc))){
-                            pSrc = InitPart(vPart1, pSrc, eSrc, aDsc);
+                        if ((pSrc = MakePart(vPart0, pSrc, eSrc, aDsc))){
+                            pSrc = MakePart(vPart1, pSrc, eSrc, aDsc);
                             pJoin = Join(pJoin, vUnit, vPart0, vPart1);
                         } else {
                             if (nJoin){
