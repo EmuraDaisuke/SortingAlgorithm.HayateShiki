@@ -7,6 +7,10 @@
 #include <algorithm>
 #include <memory.h>
 
+#if USE_GFX_TIMSORT//[
+#include "./timsort.hpp"
+#endif//]
+
 #include "./HayateShiki.h"
 #include "./Lapse.h"
 
@@ -117,6 +121,7 @@ void test(eSrc Src, int nTest, int nLoop)
         double t0 = 0;
         double t1 = 0;
         double t2 = 0;
+        double t3 = 0;
         
         for (auto n = nLoop; n; --n){
             init(Src, a, Rand, Range);
@@ -139,19 +144,31 @@ void test(eSrc Src, int nTest, int nLoop)
             }
             #endif//]
             
+            #if USE_GFX_TIMSORT//[
+            {   // 
+                auto s = a;
+                auto l = Lapse::Now();
+                gfx::timsort(s.begin(), s.end());
+                t2 += Lapse::Now() - l;
+            }
+            #endif//]
+            
             #if 1//[
             {   // 
                 auto s = a;
                 auto l = Lapse::Now();
                 HayateShiki::Sort(s.data(), s.size());
-                t2 += Lapse::Now() - l;
+                t3 += Lapse::Now() - l;
             }
             #endif//]
         }
         
-        printf("\n== std::sort\n");         Lapse::Out(t0 / nLoop);
-        printf("\n== std::stable_sort\n");  Lapse::Out(t1 / nLoop);
-        printf("\n== HayateShiki::Sort\n"); Lapse::Out(t2 / nLoop);
+        printf("std::sort         : "); Lapse::Out(t0 / nLoop);
+        printf("std::stable_sort  : "); Lapse::Out(t1 / nLoop);
+        #if USE_GFX_TIMSORT//[
+        printf("gfx::timsort      : "); Lapse::Out(t2 / nLoop);
+        #endif//]
+        printf("HayateShiki::Sort : "); Lapse::Out(t3 / nLoop);
     }
     #else//][
     for (auto n = nLoop; n; --n){
