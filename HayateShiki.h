@@ -167,7 +167,7 @@ template <class RandomAccessIterator, class Compare> class Private
         
         
         
-        static itr_t Join(itr_t aJoin, Unit& rUnit, const Part& rPart0, const Part& rPart1, cmp_t Comp)
+        static itr_t Join(itr_t aJoin, Unit& rUnit, const Part& rPart0, const Part& rPart1, const cmp_t& Comp)
         {
             auto iJoin = aJoin;
             auto o0 = rPart0.o;
@@ -222,7 +222,7 @@ template <class RandomAccessIterator, class Compare> class Private
         
         
         
-        static itr_t Join(itr_t aJoin, Unit& rUnit, const Unit& rUnit0, const Unit& rUnit1, cmp_t Comp)
+        static itr_t Join(itr_t aJoin, Unit& rUnit, const Unit& rUnit0, const Unit& rUnit1, const cmp_t& Comp)
         {
             auto iJoin = aJoin;
             auto i0 = rUnit0.a;
@@ -259,7 +259,7 @@ template <class RandomAccessIterator, class Compare> class Private
         
         
         
-        static bool MakePart(Part& rPart, itr_t& riSrc, itr_t eSrc, itr_t& raDsc, cmp_t Comp)
+        static bool MakePart(Part& rPart, itr_t& riSrc, itr_t eSrc, itr_t& raDsc, const cmp_t& Comp)
         {
             auto iSrc = riSrc;
             auto aAsc = iSrc;
@@ -271,18 +271,18 @@ template <class RandomAccessIterator, class Compare> class Private
                 
                 auto aIns = iSrc;
                 auto eIns = iSrc + nIns;
-                while (++eAsc < eIns){
+                while (++eAsc != eIns){
                     if (Comp(eAsc[0], eAsc[-1])){
                         auto iIns = eAsc;
                         auto v = std::move(iIns[0]);
                         do {
                             iIns[0] = std::move(iIns[-1]);
-                        } while (--iIns > aIns && Comp(v, iIns[-1]));
+                        } while (--iIns != aIns && Comp(v, iIns[-1]));
                         iIns[0] = std::move(v);
                     }
                 }
                 
-                for (; (eAsc < eSrc) && !Comp(eAsc[0], eAsc[-1]); ++eAsc);
+                for (; (eAsc != eSrc) && !Comp(eAsc[0], eAsc[-1]); ++eAsc);
             }
             
             {   // 
