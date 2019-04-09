@@ -157,7 +157,7 @@ void test(eSrc Src, int nTest, int nLoop)
             {   // 
                 auto s = a;
                 auto l = Lapse::Now();
-                HayateShiki::Sort(s.data(), s.size());
+                HayateShiki::Sort(s.begin(), s.end());
                 t3 += Lapse::Now() - l;
             }
             #endif//]
@@ -180,7 +180,7 @@ void test(eSrc Src, int nTest, int nLoop)
         
         std::sort(s0.begin(), s0.end());
         std::stable_sort(s1.begin(), s1.end());
-        HayateShiki::Sort(s2.data(), s2.size());
+        HayateShiki::Sort(s2.begin(), s2.end());
         
         auto bSimple01 = (s0 == s1);
         auto bSimple12 = (s1 == s2);
@@ -189,10 +189,12 @@ void test(eSrc Src, int nTest, int nLoop)
         auto bStrict12 = (memcmp(s1.data(), s2.data(), s2.size() * sizeof(Test)) == 0);
         auto bStrict20 = (memcmp(s2.data(), s0.data(), s0.size() * sizeof(Test)) == 0);
         
+        #if	0//[
         printf("\n");
         printf("%d %d %d\n", bSimple01, bStrict01, (a == s0));
         printf("%d %d %d\n", bSimple12, bStrict12, (a == s1));
         printf("%d %d %d\n", bSimple20, bStrict20, (a == s2));
+        #endif//]
         assert(bSimple12 && bStrict12);
     }
     #endif//]
