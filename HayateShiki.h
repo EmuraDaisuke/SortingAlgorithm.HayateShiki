@@ -31,10 +31,10 @@ namespace HayateShiki {
 // 
 
 template <class RandomAccessIterator>
-inline void Sort(RandomAccessIterator const first, RandomAccessIterator const last);
+inline void sort(RandomAccessIterator const first, RandomAccessIterator const last);
 
 template <class RandomAccessIterator, class Compare>
-inline void Sort(RandomAccessIterator const first, RandomAccessIterator const last, Compare comp);
+inline void sort(RandomAccessIterator const first, RandomAccessIterator const last, Compare comp);
 
 
 
@@ -42,27 +42,94 @@ inline void Sort(RandomAccessIterator const first, RandomAccessIterator const la
 
 template <class RandomAccessIterator, class Compare> class Private
 {
-    using itr_t = RandomAccessIterator;
-    using val_t = typename std::iterator_traits<itr_t>::value_type;
-    using ref_t = typename std::iterator_traits<itr_t>::reference;
-    using dif_t = typename std::iterator_traits<itr_t>::difference_type;
-    using cmp_t = Compare;
-    
-    
-    
     private:
         static constexpr std::size_t Bit(int v) noexcept
         {
             return (1ULL << v);
         }
         
-        
-        
         static constexpr std::size_t cbIns = 5;
         static constexpr std::size_t cnIns = Bit(cbIns);
+    
+    
+    
+    private:
+        template <class ForwardIterator, class ValueType> class Array
+        {
+            public:
+                using val_t = ValueType;
+                using ref_t = val_t&;
+                using ptr_t = val_t*;
+                using itr_t = ptr_t;
+                using dif_t = ptrdiff_t;
+            
+            
+            
+            private:
+                dif_t mSize;
+                ptr_t mData;
+                bool mbTemporary;
+            
+            
+            
+            public:
+                ~Array() noexcept
+                {
+                    if (mbTemporary) ::operator delete(mData, std::nothrow);
+                }
+                
+                
+                
+                Array(ForwardIterator first, ForwardIterator last)
+                :mSize(std::distance(first, last))
+                ,mData(&*first)
+                ,mbTemporary(false)
+                {}
+                
+                
+                
+                Array(dif_t Size)
+                :mSize(Size)
+                ,mData(static_cast<ptr_t>(::operator new(sizeof(val_t) * mSize, std::nothrow)))
+                ,mbTemporary(true)
+                {}
+                
+                
+                
+                itr_t begin() const noexcept
+                {
+                    return mData;
+                }
+                
+                
+                
+                itr_t end() const noexcept
+                {
+                    return mData + mSize;
+                }
+            
+            
+            
+            private:
+                Array(const Array&) = delete;
+                Array& operator =(const Array&) = delete;
+        };
+    
+    
+    
+    private:
+        using rai_t = RandomAccessIterator;
+        using rai_v = typename std::iterator_traits<rai_t>::value_type;
         
-        
-        
+        using itr_t = typename Array<rai_t, rai_v>::itr_t;
+        using val_t = typename Array<rai_t, rai_v>::val_t;
+        using ref_t = typename Array<rai_t, rai_v>::ref_t;
+        using dif_t = typename Array<rai_t, rai_v>::dif_t;
+        using cmp_t = Compare;
+    
+    
+    
+    private:
         struct Part
         {
             enum oUnit {
@@ -71,25 +138,25 @@ template <class RandomAccessIterator, class Compare> class Private
                 oUnit_Num,
             };
             
-            itr_t   a[oUnit_Num];
-            dif_t   n[oUnit_Num];
-            oUnit   o;
+            itr_t a[oUnit_Num];
+            dif_t n[oUnit_Num];
+            oUnit o;
         };
         
         
         
         struct Unit
         {
-            itr_t   a;
-            dif_t   n;
+            itr_t a;
+            dif_t n;
         };
         
         
         
         struct Dive
         {
-            Unit    mUnit;
-            itr_t   mpJoin;
+            Unit mUnit;
+            itr_t mpJoin;
         };
     
     
@@ -342,34 +409,32 @@ template <class RandomAccessIterator, class Compare> class Private
     
     
     public:
-        static void Sort(itr_t const first, itr_t const last, cmp_t comp)
+        static void Sort(rai_t const first, rai_t const last, cmp_t comp)
         {
-            Auto nSrc = Num(first, last);
+            Auto nSrc = std::distance(first, last);
             if (nSrc > 1){
-                std::vector<val_t> aVal(nSrc);
-                
-                Auto aSrc = first;
-                Auto eSrc = last;
-                Auto aTmp = aVal.begin();
-                Auto eTmp = aVal.end();
+                Array<rai_t, rai_v> aOriginal(first, last);
+                Array<rai_t, rai_v> aExternal(nSrc);
                 
                 Auto nDive = LowerLimit((MsbAlignment(nSrc) - cbIns), 1);
                 Auto aDive = local_array(Dive, (nDive+1));
-                for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].mpJoin = (oDive & Bit(0))? aTmp: aSrc;
+                for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].mpJoin = (oDive & Bit(0))? aExternal.begin(): aOriginal.begin();
                 
                 {   // 
                     std::size_t nJoin = 0;
                     
                     {   // 
-                        auto iJoin = aTmp;
+                        auto iJoin = aExternal.begin();
                         
-                        auto iSrc = aSrc;
+                        Auto aSrc = aOriginal.begin();
+                        Auto eSrc = aOriginal.end();
+                        Auto iSrc = aSrc;
                         while (iSrc != eSrc){
                             Unit vUnit;
                             
                             {   // 
                                 Part vPart0, vPart1;
-                                auto aDsc = eTmp;
+                                auto aDsc = aExternal.end();
                                 if (MakePart(vPart0, iSrc, eSrc, aDsc, comp)){
                                     MakePart(vPart1, iSrc, eSrc, aDsc, comp);
                                     iJoin = Join(iJoin, vUnit, vPart0, vPart1, comp);
@@ -411,8 +476,8 @@ template <class RandomAccessIterator, class Compare> class Private
                             }
                         }
                         
-                        if (pResult->mUnit.a == aTmp){
-                            Copy(aSrc, pResult->mUnit.a, pResult->mUnit.n);
+                        if (pResult->mUnit.a == aExternal.begin()){
+                            Copy(aOriginal.begin(), pResult->mUnit.a, pResult->mUnit.n);
                         }
                     }
                 }
@@ -423,15 +488,15 @@ template <class RandomAccessIterator, class Compare> class Private
 
 
 template <class RandomAccessIterator>
-inline void Sort(RandomAccessIterator const first, RandomAccessIterator const last)
+inline void sort(RandomAccessIterator const first, RandomAccessIterator const last)
 {
-    HayateShiki::Sort(first, last, std::less<typename std::iterator_traits<RandomAccessIterator>::value_type>());
+    HayateShiki::sort(first, last, std::less<typename std::iterator_traits<RandomAccessIterator>::value_type>());
 }
 
 
 
 template <class RandomAccessIterator, class Compare>
-inline void Sort(RandomAccessIterator const first, RandomAccessIterator const last, Compare comp)
+inline void sort(RandomAccessIterator const first, RandomAccessIterator const last, Compare comp)
 {
     HayateShiki::Private<RandomAccessIterator, Compare>::Sort(first, last, comp);
 }

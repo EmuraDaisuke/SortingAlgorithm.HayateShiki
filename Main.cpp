@@ -2,8 +2,9 @@
 
 
 #include <cassert>
-#include <vector>
 #include <random>
+#include <vector>
+#include <array>
 #include <algorithm>
 #include <memory.h>
 
@@ -157,7 +158,7 @@ void test(eSrc Src, int nTest, int nLoop)
             {   // 
                 auto s = a;
                 auto l = Lapse::Now();
-                HayateShiki::Sort(s.begin(), s.end());
+                HayateShiki::sort(s.begin(), s.end());
                 t3 += Lapse::Now() - l;
             }
             #endif//]
@@ -168,7 +169,7 @@ void test(eSrc Src, int nTest, int nLoop)
         #if USE_GFX_TIMSORT//[
         printf("gfx::timsort      : "); Lapse::Out(t2 / nLoop);
         #endif//]
-        printf("HayateShiki::Sort : "); Lapse::Out(t3 / nLoop);
+        printf("HayateShiki::sort : "); Lapse::Out(t3 / nLoop);
     }
     #else//][
     for (auto n = nLoop; n; --n){
@@ -180,7 +181,7 @@ void test(eSrc Src, int nTest, int nLoop)
         
         std::sort(s0.begin(), s0.end());
         std::stable_sort(s1.begin(), s1.end());
-        HayateShiki::Sort(s2.begin(), s2.end());
+        HayateShiki::sort(s2.begin(), s2.end());
         
         auto bSimple01 = (s0 == s1);
         auto bSimple12 = (s1 == s2);
