@@ -109,8 +109,8 @@ constexpr std::size_t Bit(int v) noexcept
 
 // 
 
-constexpr std::size_t bIns = 5;
-constexpr std::size_t nIns = Bit(bIns);
+constexpr std::size_t cbIns = 5;
+constexpr std::size_t cnIns = Bit(cbIns);
 
 
 
@@ -277,9 +277,10 @@ T* MakePart(Part<T>& rPart, T* pSrc, T* eSrc, T*& raDsc)
     
     {   // 
         Auto nSrc = Num(pSrc, eSrc);
+        auto nIns = (nSrc < cnIns)? nSrc: cnIns;
         
         auto aIns = &pSrc[0];
-        auto eIns = &pSrc[(nSrc < nIns)? nSrc: nIns];
+        auto eIns = &pSrc[nIns];
         while (++eAsc < eIns){
             if (eAsc[0] < eAsc[-1]){
                 auto pIns = eAsc;
@@ -367,7 +368,7 @@ void Sort(T* const aSrc, std::size_t nSrc, T* const aExt)
     if (aSrc && nSrc > 1){
         auto aTmp = (aExt)? aExt: new T[nSrc];
         
-        Auto nDive = LowerLimit((MsbAlignment(nSrc) - bIns), 1);
+        Auto nDive = LowerLimit((MsbAlignment(nSrc) - cbIns), 1);
         Auto aDive = local_array(Dive<T>, (nDive+1));
         for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].mpJoin = (oDive & Bit(0))? aTmp: aSrc;
         
