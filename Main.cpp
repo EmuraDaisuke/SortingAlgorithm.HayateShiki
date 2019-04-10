@@ -27,20 +27,20 @@ double precision(double v){ return (v/0x000fffffffffffff); }
 
 enum eSrc {
     Rand,
+    Flat,
     Inc,
     Dec,
-    Flat,
-    IInc,
-    IDec,
+    IInc,   // interleaved increasing
+    IDec,   // interleaved decreasing
     
     Num,
 };
 
 static const char* apSrc[eSrc::Num]={
     "Rand",
+    "Flat",
     "Inc",
     "Dec",
-    "Flat",
     "IInc",
     "IDec",
 };
@@ -112,17 +112,17 @@ void init(eSrc Src, std::vector<Test>& a, std::mt19937& rRand, std::uniform_int_
                 for (auto& v : a) v.m = rRange(rRand);
                 break;
             }
+            case eSrc::Flat:{
+                sort_t m = 1;
+                for (auto& v : a) v.m = m;
+                break;
+            }
             case eSrc::Inc:{
                 increment(a);
                 break;
             }
             case eSrc::Dec:{
                 decrement(a);
-                break;
-            }
-            case eSrc::Flat:{
-                sort_t m = 1;
-                for (auto& v : a) v.m = m;
                 break;
             }
             case eSrc::IInc:{
@@ -242,9 +242,9 @@ int main(int argc, char* argv[])
     test(eSrc::Rand,   1000000, 100);
     test(eSrc::Rand, 100000000, 10);
     
+    test(eSrc::Flat, 100000000, 5);
     test(eSrc::Inc,  100000000, 5);
     test(eSrc::Dec,  100000000, 5);
-    test(eSrc::Flat, 100000000, 5);
     test(eSrc::IInc, 100000000, 5);
     test(eSrc::IDec, 100000000, 5);
     return 0;
