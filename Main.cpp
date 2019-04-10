@@ -17,20 +17,33 @@
 
 
 
-enum eSrc {
-    Rand,
-    Inc,
-    Dec,
-    Flat,
-    
-    Num,
-};
-
 using sort_t = float;
 
 int precision(int v){ return 1; }
 float precision(float v){ return (v/0x00ffffff); }
 double precision(double v){ return (v/0x000fffffffffffff); }
+
+
+
+enum eSrc {
+    Rand,
+    Inc,
+    Dec,
+    Flat,
+    IInc,
+    IDec,
+    
+    Num,
+};
+
+static const char* apSrc[eSrc::Num]={
+    "Rand",
+    "Inc",
+    "Dec",
+    "Flat",
+    "IInc",
+    "IDec",
+};
 
 
 
@@ -60,6 +73,24 @@ bool operator ==(const Test& s, const Test& t)
 
 
 
+void increment(std::vector<Test>& a)
+{
+    sort_t m = 1;
+    for (auto& v : a){ v.m = m; m += precision(m); }
+}
+
+void decrement(std::vector<Test>& a)
+{
+    sort_t m = 1;
+    for (auto& v : a){ v.m = -m; m += precision(m); }
+}
+
+void interleave(std::vector<Test>& a)
+{
+    auto n = a.size() & ~1;
+    for (auto o = n-n; o < n; o += 2) std::swap(a[o], a[o+1]);
+}
+
 void init(eSrc Src, std::vector<Test>& a, std::mt19937& rRand, std::uniform_int_distribution<>& rRange)
 {
     {   // 
@@ -82,18 +113,26 @@ void init(eSrc Src, std::vector<Test>& a, std::mt19937& rRand, std::uniform_int_
                 break;
             }
             case eSrc::Inc:{
-                sort_t m = 1;
-                for (auto& v : a){ v.m = m; m += precision(m); }
+                increment(a);
                 break;
             }
             case eSrc::Dec:{
-                sort_t m = 1;
-                for (auto& v : a){ v.m = -m; m += precision(m); }
+                decrement(a);
                 break;
             }
             case eSrc::Flat:{
                 sort_t m = 1;
                 for (auto& v : a) v.m = m;
+                break;
+            }
+            case eSrc::IInc:{
+                increment(a);
+                interleave(a);
+                break;
+            }
+            case eSrc::IDec:{
+                decrement(a);
+                interleave(a);
                 break;
             }
         }
@@ -109,12 +148,6 @@ void test(eSrc Src, int nTest, int nLoop)
     std::uniform_int_distribution<> Range(0, std::numeric_limits<int>::max());
     auto a = std::vector<Test>(nTest);
     
-    static const char* apSrc[eSrc::Num]={
-        "Rand",
-        "Inc",
-        "Dec",
-        "Flat",
-    };
     printf("\n--- %s %d\n", apSrc[Src], nTest);
     
     #if 1//[
@@ -190,7 +223,7 @@ void test(eSrc Src, int nTest, int nLoop)
         auto bStrict12 = (memcmp(s1.data(), s2.data(), s2.size() * sizeof(Test)) == 0);
         auto bStrict20 = (memcmp(s2.data(), s0.data(), s0.size() * sizeof(Test)) == 0);
         
-        #if	0//[
+        #if 0//[
         printf("\n");
         printf("%d %d %d\n", bSimple01, bStrict01, (a == s0));
         printf("%d %d %d\n", bSimple12, bStrict12, (a == s1));
@@ -212,5 +245,7 @@ int main(int argc, char* argv[])
     test(eSrc::Inc,  100000000, 5);
     test(eSrc::Dec,  100000000, 5);
     test(eSrc::Flat, 100000000, 5);
+    test(eSrc::IInc, 100000000, 5);
+    test(eSrc::IDec, 100000000, 5);
     return 0;
 }
