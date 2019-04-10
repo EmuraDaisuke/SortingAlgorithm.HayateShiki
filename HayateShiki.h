@@ -66,45 +66,45 @@ template <class RandomAccessIterator, class Compare> class Private
             
             private:
                 bool mbTemporary;
-                ptr_t mpBegin;
-                ptr_t mpEnd;
+                dif_t mSize;
+                ptr_t mData;
             
             
             
             public:
                 ~Array() noexcept
                 {
-                    if (mbTemporary) ::operator delete(mpBegin, std::nothrow);
+                    if (mbTemporary) ::operator delete(mData, std::nothrow);
                 }
                 
                 
                 
                 Array(ForwardIterator first, ForwardIterator last)
                 :mbTemporary(false)
-                ,mpBegin(&*first)
-                ,mpEnd(&*last)
+                ,mSize(std::distance(first, last))
+                ,mData(&*first)
                 {}
                 
                 
                 
                 Array(dif_t Size)
                 :mbTemporary(true)
-                ,mpBegin(static_cast<ptr_t>(::operator new(sizeof(val_t) * Size)))
-                ,mpEnd(mpBegin + Size)
+                ,mSize(Size)
+                ,mData(static_cast<ptr_t>(::operator new(sizeof(val_t) * Size)))
                 {}
                 
                 
                 
                 itr_t begin() const noexcept
                 {
-                    return mpBegin;
+                    return mData;
                 }
                 
                 
                 
                 itr_t end() const noexcept
                 {
-                    return mpEnd;
+                    return mData + mSize;
                 }
             
             
