@@ -65,46 +65,46 @@ template <class RandomAccessIterator, class Compare> class Private
             
             
             private:
-                dif_t mSize;
-                ptr_t mData;
                 bool mbTemporary;
+                ptr_t mpBegin;
+                ptr_t mpEnd;
             
             
             
             public:
                 ~Array() noexcept
                 {
-                    if (mbTemporary) ::operator delete(mData, std::nothrow);
+                    if (mbTemporary) ::operator delete(mpBegin, std::nothrow);
                 }
                 
                 
                 
                 Array(ForwardIterator first, ForwardIterator last)
-                :mSize(std::distance(first, last))
-                ,mData(&*first)
-                ,mbTemporary(false)
+                :mbTemporary(false)
+                ,mpBegin(&*first)
+                ,mpEnd(&*last)
                 {}
                 
                 
                 
                 Array(dif_t Size)
-                :mSize(Size)
-                ,mData(static_cast<ptr_t>(::operator new(sizeof(val_t) * mSize)))
-                ,mbTemporary(true)
+                :mbTemporary(true)
+                ,mpBegin(static_cast<ptr_t>(::operator new(sizeof(val_t) * Size)))
+                ,mpEnd(mpBegin + Size)
                 {}
                 
                 
                 
                 itr_t begin() const noexcept
                 {
-                    return mData;
+                    return mpBegin;
                 }
                 
                 
                 
                 itr_t end() const noexcept
                 {
-                    return mData + mSize;
+                    return mpEnd;
                 }
             
             
@@ -156,7 +156,7 @@ template <class RandomAccessIterator, class Compare> class Private
         struct Dive
         {
             Unit mUnit;
-            itr_t mpJoin;
+            itr_t miJoin;
         };
     
     
@@ -418,7 +418,7 @@ template <class RandomAccessIterator, class Compare> class Private
                 
                 Auto nDive = LowerLimit((MsbAlignment(nSrc) - cbIns), 1);
                 Auto aDive = local_array(Dive, (nDive+1));
-                for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].mpJoin = (oDive & Bit(0))? aExternal.begin(): aOriginal.begin();
+                for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].miJoin = (oDive & Bit(0))? aExternal.begin(): aOriginal.begin();
                 
                 {   // 
                     std::size_t nJoin = 0;
@@ -453,7 +453,7 @@ template <class RandomAccessIterator, class Compare> class Private
                                 auto Carry = nJoin++;
                                 Carry = (nJoin ^ Carry) & Carry;
                                 for (; Carry; Carry >>= 1, ++pDive){
-                                    pDive->mpJoin = Join(pDive->mpJoin, vUnit, pDive->mUnit, vUnit, comp);
+                                    pDive->miJoin = Join(pDive->miJoin, vUnit, pDive->mUnit, vUnit, comp);
                                 }
                                 pDive->mUnit = vUnit;
                             }
@@ -471,7 +471,7 @@ template <class RandomAccessIterator, class Compare> class Private
                             Carry >>= oDive;
                             for (; Carry; Carry >>= 1, ++pDive){
                                 if (Carry & Bit(0)){
-                                    Join(pDive->mpJoin, pResult->mUnit, pDive->mUnit, pResult->mUnit, comp);
+                                    Join(pDive->miJoin, pResult->mUnit, pDive->mUnit, pResult->mUnit, comp);
                                 }
                             }
                         }
