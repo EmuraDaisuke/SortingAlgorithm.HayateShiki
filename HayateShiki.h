@@ -132,15 +132,15 @@ template <class RandomAccessIterator, class Compare> class Private
     private:
         struct Part
         {
-            enum oUnit {
-                oUnit_Asc,
-                oUnit_Dsc,
-                oUnit_Num,
+            enum oRow {
+                oAsc,
+                oDsc,
+                oNum,
             };
             
-            itr_t a[oUnit_Num];
-            dif_t n[oUnit_Num];
-            oUnit o;
+            itr_t a[oNum];
+            dif_t n[oNum];
+            oRow o;
         };
         
         
@@ -221,14 +221,14 @@ template <class RandomAccessIterator, class Compare> class Private
         
         static itr_t Join(itr_t iJoin, Unit& rUnit, const Part& rPart)
         {
-            auto nDsc = rPart.n[Part::oUnit_Dsc];
-            auto nAsc = rPart.n[Part::oUnit_Asc];
+            auto nDsc = rPart.n[Part::oDsc];
+            auto nAsc = rPart.n[Part::oAsc];
             
             rUnit.a = iJoin;
             rUnit.n = nDsc + nAsc;
             
-            iJoin = Copy(iJoin, rPart.a[Part::oUnit_Dsc], nDsc);
-            iJoin = Copy(iJoin, rPart.a[Part::oUnit_Asc], nAsc);
+            iJoin = Copy(iJoin, rPart.a[Part::oDsc], nDsc);
+            iJoin = Copy(iJoin, rPart.a[Part::oAsc], nAsc);
             return iJoin;
         }
         
@@ -253,13 +253,13 @@ template <class RandomAccessIterator, class Compare> class Private
                         v1 = std::move(*++i1);
                     } else {
                         if (o1){
-                            o1 = Part::oUnit_Asc;
+                            o1 = Part::oAsc;
                             i1 = rPart1.a[o1];
                             n1 = rPart1.n[o1];
                             v1 = std::move(*i1);
                         } else {
                             iJoin = Copy(iJoin, i0, n0, v0);
-                            if (o0) iJoin = Copy(iJoin, rPart0.a[Part::oUnit_Asc], rPart0.n[Part::oUnit_Asc]);
+                            if (o0) iJoin = Copy(iJoin, rPart0.a[Part::oAsc], rPart0.n[Part::oAsc]);
                             break;
                         }
                     }
@@ -269,13 +269,13 @@ template <class RandomAccessIterator, class Compare> class Private
                         v0 = std::move(*++i0);
                     } else {
                         if (o0){
-                            o0 = Part::oUnit_Asc;
+                            o0 = Part::oAsc;
                             i0 = rPart0.a[o0];
                             n0 = rPart0.n[o0];
                             v0 = std::move(*i0);
                         } else {
                             iJoin = Copy(iJoin, i1, n1, v1);
-                            if (o1) iJoin = Copy(iJoin, rPart1.a[Part::oUnit_Asc], rPart1.n[Part::oUnit_Asc]);
+                            if (o1) iJoin = Copy(iJoin, rPart1.a[Part::oAsc], rPart1.n[Part::oAsc]);
                             break;
                         }
                     }
@@ -378,11 +378,11 @@ template <class RandomAccessIterator, class Compare> class Private
                 
                 {   // 
                     Auto nDsc = Num(aDsc, eDsc);
-                    rPart.a[Part::oUnit_Asc] = aAsc;
-                    rPart.n[Part::oUnit_Asc] = Num(aAsc, eAsc);
-                    rPart.a[Part::oUnit_Dsc] = aDsc;
-                    rPart.n[Part::oUnit_Dsc] = nDsc;
-                    rPart.o = (nDsc)? Part::oUnit_Dsc: Part::oUnit_Asc;
+                    rPart.a[Part::oAsc] = aAsc;
+                    rPart.n[Part::oAsc] = Num(aAsc, eAsc);
+                    rPart.a[Part::oDsc] = aDsc;
+                    rPart.n[Part::oDsc] = nDsc;
+                    rPart.o = (nDsc)? Part::oDsc: Part::oAsc;
                 }
                 
                 riSrc = iOdd;
@@ -395,14 +395,14 @@ template <class RandomAccessIterator, class Compare> class Private
         
         static void Turn(itr_t iDst, const Part& rPart)
         {
-            auto nDsc = rPart.n[Part::oUnit_Dsc];
-            auto nAsc = rPart.n[Part::oUnit_Asc];
+            auto nDsc = rPart.n[Part::oDsc];
+            auto nAsc = rPart.n[Part::oAsc];
             auto aDsc = iDst;
             auto aAsc = iDst + nDsc;
             
             if (nDsc){
-                Copy(aAsc, rPart.a[Part::oUnit_Asc], nAsc);
-                Copy(aDsc, rPart.a[Part::oUnit_Dsc], nDsc);
+                Copy(aAsc, rPart.a[Part::oAsc], nAsc);
+                Copy(aDsc, rPart.a[Part::oDsc], nDsc);
             }
         }
     
