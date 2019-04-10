@@ -6,7 +6,6 @@
 
 #include <cstddef>
 #include <utility>
-#include <algorithm>
 #include <malloc.h>
 
 #if _MSC_VER//[
@@ -90,7 +89,7 @@ template <class RandomAccessIterator, class Compare> class Private
                 
                 Array(dif_t Size)
                 :mSize(Size)
-                ,mData(static_cast<ptr_t>(::operator new(sizeof(val_t) * mSize, std::nothrow)))
+                ,mData(static_cast<ptr_t>(::operator new(sizeof(val_t) * mSize)))
                 ,mbTemporary(true)
                 {}
                 
@@ -416,74 +415,70 @@ template <class RandomAccessIterator, class Compare> class Private
                 Array<rai_t, rai_v> aOriginal(first, last);
                 Array<rai_t, rai_v> aExternal(nSrc);
                 
-                if (aExternal.begin()){
-                    Auto nDive = LowerLimit((MsbAlignment(nSrc) - cbIns), 1);
-                    Auto aDive = local_array(Dive, (nDive+1));
-                    for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].mpJoin = (oDive & Bit(0))? aExternal.begin(): aOriginal.begin();
+                Auto nDive = LowerLimit((MsbAlignment(nSrc) - cbIns), 1);
+                Auto aDive = local_array(Dive, (nDive+1));
+                for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].mpJoin = (oDive & Bit(0))? aExternal.begin(): aOriginal.begin();
+                
+                {   // 
+                    std::size_t nJoin = 0;
                     
                     {   // 
-                        std::size_t nJoin = 0;
+                        auto iJoin = aExternal.begin();
                         
-                        {   // 
-                            auto iJoin = aExternal.begin();
-                            
-                            Auto aSrc = aOriginal.begin();
-                            Auto eSrc = aOriginal.end();
-                            Auto iSrc = aSrc;
-                            while (iSrc != eSrc){
-                                Unit vUnit;
-                                
-                                {   // 
-                                    Part vPart0, vPart1;
-                                    auto aDsc = aExternal.end();
-                                    if (MakePart(vPart0, iSrc, eSrc, aDsc, comp)){
-                                        MakePart(vPart1, iSrc, eSrc, aDsc, comp);
-                                        iJoin = Join(iJoin, vUnit, vPart0, vPart1, comp);
-                                    } else {
-                                        if (nJoin){
-                                            iJoin = Join(iJoin, vUnit, vPart0);
-                                        } else {
-                                            Turn(aSrc, vPart0);
-                                            break;
-                                        }
-                                    }
-                                }
-                                
-                                {   // 
-                                    auto pDive = &aDive[0];
-                                    auto Carry = nJoin++;
-                                    Carry = (nJoin ^ Carry) & Carry;
-                                    for (; Carry; Carry >>= 1, ++pDive){
-                                        pDive->mpJoin = Join(pDive->mpJoin, vUnit, pDive->mUnit, vUnit, comp);
-                                    }
-                                    pDive->mUnit = vUnit;
-                                }
-                            }
-                        }
-                        
-                        if (nJoin){
-                            auto bJoin = nJoin & -nJoin;
-                            auto oDive = Msb(bJoin);
-                            auto pResult = &aDive[oDive++];
+                        Auto aSrc = aOriginal.begin();
+                        Auto eSrc = aOriginal.end();
+                        Auto iSrc = aSrc;
+                        while (iSrc != eSrc){
+                            Unit vUnit;
                             
                             {   // 
-                                auto pDive = &aDive[oDive];
-                                auto Carry = nJoin ^ bJoin;
-                                Carry >>= oDive;
-                                for (; Carry; Carry >>= 1, ++pDive){
-                                    if (Carry & Bit(0)){
-                                        Join(pDive->mpJoin, pResult->mUnit, pDive->mUnit, pResult->mUnit, comp);
+                                Part vPart0, vPart1;
+                                auto aDsc = aExternal.end();
+                                if (MakePart(vPart0, iSrc, eSrc, aDsc, comp)){
+                                    MakePart(vPart1, iSrc, eSrc, aDsc, comp);
+                                    iJoin = Join(iJoin, vUnit, vPart0, vPart1, comp);
+                                } else {
+                                    if (nJoin){
+                                        iJoin = Join(iJoin, vUnit, vPart0);
+                                    } else {
+                                        Turn(aSrc, vPart0);
+                                        break;
                                     }
                                 }
                             }
                             
-                            if (pResult->mUnit.a == aExternal.begin()){
-                                Copy(aOriginal.begin(), pResult->mUnit.a, pResult->mUnit.n);
+                            {   // 
+                                auto pDive = &aDive[0];
+                                auto Carry = nJoin++;
+                                Carry = (nJoin ^ Carry) & Carry;
+                                for (; Carry; Carry >>= 1, ++pDive){
+                                    pDive->mpJoin = Join(pDive->mpJoin, vUnit, pDive->mUnit, vUnit, comp);
+                                }
+                                pDive->mUnit = vUnit;
                             }
                         }
                     }
-                } else {
-                    std::stable_sort(first, last, comp);
+                    
+                    if (nJoin){
+                        auto bJoin = nJoin & -nJoin;
+                        auto oDive = Msb(bJoin);
+                        auto pResult = &aDive[oDive++];
+                        
+                        {   // 
+                            auto pDive = &aDive[oDive];
+                            auto Carry = nJoin ^ bJoin;
+                            Carry >>= oDive;
+                            for (; Carry; Carry >>= 1, ++pDive){
+                                if (Carry & Bit(0)){
+                                    Join(pDive->mpJoin, pResult->mUnit, pDive->mUnit, pResult->mUnit, comp);
+                                }
+                            }
+                        }
+                        
+                        if (pResult->mUnit.a == aExternal.begin()){
+                            Copy(aOriginal.begin(), pResult->mUnit.a, pResult->mUnit.n);
+                        }
+                    }
                 }
             }
         }
