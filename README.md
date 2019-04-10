@@ -139,9 +139,9 @@ The unit is seconds, the lower the number, the faster.
 ## **Msvc**
 |Array|std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
 |-:|-:|-:|-:|-:|
-|10,000|0.00045246|0.00038873|0.00062176|**0.00037623**|
-|1,000,000|0.06813277|0.06093867|0.08863368|**0.05777066**|
-|100,000,000|8.94022903|8.47948857|11.70084008|**7.79592353**|
+|10,000|0.00045104|0.00038737|0.00062055|**0.00037726**|
+|1,000,000|0.06895459|0.06194708|0.09007592|**0.05960105**|
+|100,000,000|8.94273760|8.48790507|11.70993918|**7.90364017**|
 
 Msvc is slower on std::sort and faster on std::stable_sort compared to other compilers.  
 Although the unexpected result came out from the beginning, I was able to win because of this characteristic.  
@@ -149,9 +149,9 @@ Although the unexpected result came out from the beginning, I was able to win be
 ## **clang++**
 |Array|std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
 |-:|-:|-:|-:|-:|
-|10,000|0.00039759|0.00044011|0.00058801|**0.00039381**|
-|1,000,000|**0.05758739**|0.06616213|0.08201547|0.06179281|
-|100,000,000|**7.59832462**|8.98149368|10.78802763|8.35315418|
+|10,000|0.00039748|0.00044216|0.00058833|**0.00039542**|
+|1,000,000|**0.05794733**|0.06703828|0.08304218|0.06467940|
+|100,000,000|**7.59819467**|9.02512841|10.90226948|8.69520123|
 
 A disappointing result clang++.  
 Compared to other compilers, the optimization logic resulted in questionable results.  
@@ -159,9 +159,9 @@ Compared to other compilers, the optimization logic resulted in questionable res
 ## **g++**
 |Array|std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
 |-:|-:|-:|-:|-:|
-|10,000|0.00039976|0.00043879|0.00063106|**0.00037259**|
-|1,000,000|**0.05787407**|0.06543038|0.08824662|0.05804457|
-|100,000,000|**7.63117388**|8.87959867|11.41298208|7.81652397|
+|10,000|0.00039915|0.00044045|0.00062139|**0.00037733**|
+|1,000,000|**0.05791501**|0.06553794|0.08642513|0.05851454|
+|100,000,000|**7.62242797**|8.88416647|11.16218393|7.86212201|
 
 Good fight was g ++.  
 Even [1,000,000] has become close.  
@@ -173,33 +173,35 @@ The difference in [100,000,000] seems to be the effect of caching efficiency due
 The following all sorted the array [100,000,000] of float value.  
 The unit is seconds, the lower the number, the faster.  
 
-## Ascending completed
+## Ascending order
 ||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
 |-:|-:|-:|-:|-:|
-|Msvc|1.05179160|1.27148740|**0.04668568**|0.19135180|
-|clang++|1.03415544|1.46316208|**0.03579544**|0.17728592|
-|g++|1.43500044|1.28193182|**0.04063568**|0.18892132|
+|Msvc|1.05042422|1.26930574|0.04714074|**0.04002944**|
+|clang++|1.05335930|1.44680144|**0.03551652**|0.03996312|
+|g++|1.43373992|1.27849542|0.04640786|**0.03997012**|
 
-## Descending completed
+## Descending order
 ||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
 |-:|-:|-:|-:|-:|
-|Msvc|1.24744338|1.63704790|**0.05956712**|0.28730910|
-|clang++|0.74045104|1.51935572|**0.07884614**|0.25792324|
-|g++|1.03767822|1.51203144|**0.07834288**|0.24093602|
+|Msvc|1.24230476|1.63490322|**0.05923096**|0.27479994|
+|clang++|0.76989306|1.53627088|**0.07876710**|0.22927154|
+|g++|1.04074260|1.53410250|**0.07918274**|0.23090848|
 
 ## Constant
 ||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
 |-:|-:|-:|-:|-:|
-|Msvc|0.06624690|1.26874262|**0.04670814**|0.18949800|
-|clang++|0.96820870|1.46377342|**0.03569006**|0.17826696|
-|g++|1.25858640|1.27864388|**0.04058178**|0.18731668|
+|Msvc|0.06637970|1.26441570|0.04730072|**0.04029890**|
+|clang++|1.14472912|1.44540720|**0.03527028**|0.03984316|
+|g++|1.26266952|1.29177762|0.04832892|**0.04242476**|
 
 <br>
 
 # Finally
 How was it?  
 
-Hayate-Shiki won all over std::stable_sort, but it turns out that it is not easy to win over std::sort.  
+Beat std::stable_sort!  
+Almost defeated gfx::timsort but lost in descending order.  
+And it turns out that it is not easy to win std::sort.  
 However, depending on the environment and input, it may have the potential to surpass std::sort.  
 
 Does it come the day when merge sort wins quick sort?  
