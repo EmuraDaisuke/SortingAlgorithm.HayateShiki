@@ -124,6 +124,7 @@ template <class RandomAccessIterator, class Compare> class Private
         using val_t = typename Array<rai_t, rai_v>::val_t;
         using ref_t = typename Array<rai_t, rai_v>::ref_t;
         using dif_t = typename Array<rai_t, rai_v>::dif_t;
+        
         using cmp_t = Compare;
     
     
