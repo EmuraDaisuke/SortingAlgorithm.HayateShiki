@@ -5,10 +5,9 @@ It has the following features.
 * Comparison sort
 * Stable sort
 * External area: N
+* Best time: O (N)
 * Average time: O (N log N)
 * Worst time: O (N log N)
-* Ascending completed: O (N)
-* Descending completed: O (2N)
 * Recursion: None
 
 <br>
