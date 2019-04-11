@@ -116,376 +116,405 @@ template <class RandomAccessIterator, class Compare> class Private
     
     
     
-    private:
-        using rai_t = RandomAccessIterator;
-        using rai_v = typename std::iterator_traits<rai_t>::value_type;
-        
-        using itr_t = typename Array<rai_t, rai_v>::itr_t;
-        using val_t = typename Array<rai_t, rai_v>::val_t;
-        using ref_t = typename Array<rai_t, rai_v>::ref_t;
-        using dif_t = typename Array<rai_t, rai_v>::dif_t;
-        
-        using cmp_t = Compare;
-    
-    
-    
-    private:
-        struct Part
-        {
-            enum oRow {
-                oAsc,
-                oDsc,
-                oNum,
-            };
+    public:
+        class Technique {
+            private:
+                using rai_t = RandomAccessIterator;
+                using rai_v = typename std::iterator_traits<rai_t>::value_type;
+                
+                using itr_t = typename Array<rai_t, rai_v>::itr_t;
+                using val_t = typename Array<rai_t, rai_v>::val_t;
+                using ref_t = typename Array<rai_t, rai_v>::ref_t;
+                using dif_t = typename Array<rai_t, rai_v>::dif_t;
+                
+                using cmp_t = Compare;
             
-            itr_t a[oNum];
-            dif_t n[oNum];
-            oRow o;
-        };
-        
-        
-        
-        struct Unit
-        {
-            itr_t a;
-            dif_t n;
-        };
-        
-        
-        
-        struct Dive
-        {
-            Unit mUnit;
-            itr_t miJoin;
-        };
-    
-    
-    
-    private:
-        static int Msb(std::size_t v) noexcept
-        {
-            if (v){
-                union IEEE_754 {
-                    float v;
-                    struct {
-                        unsigned int fraction:23;
-                        unsigned int exponent:8;
-                        unsigned int sign:1;
-                    } map;
+            
+            
+            private:
+                const dif_t mnOriginal;
+                Array<rai_t, rai_v> maOriginal;
+                Array<rai_t, rai_v> maExternal;
+                const cmp_t mComp;
+            
+            
+            
+            private:
+                struct Part
+                {
+                    enum oRow {
+                        oAsc,
+                        oDsc,
+                        oNum,
+                    };
+                    
+                    itr_t a[oNum];
+                    dif_t n[oNum];
+                    oRow o;
                 };
-                IEEE_754 lzc;
-                lzc.v = v;
-                return (lzc.map.exponent - 127);
-            }
-            return -1;
-        }
-        
-        
-        
-        static int MsbAlignment(std::size_t v) noexcept
-        {
-            return Msb(v + v - 1);
-        }
-        
-        
-        
-        static int LowerLimit(int v, int limit) noexcept
-        {
-            return (v > limit)? v: limit;
-        }
-        
-        
-        
-        static dif_t Num(itr_t const first, itr_t const last) noexcept
-        {
-            return last - first;
-        }
-        
-        
-        
-        static itr_t Copy(itr_t iDst, itr_t iSrc, dif_t nSrc)
-        {
-            while (nSrc--) *iDst++ = std::move(*iSrc++);
-            return iDst;
-        }
-        
-        
-        
-        static itr_t Copy(itr_t iDst, itr_t iSrc, dif_t nSrc, ref_t v)
-        {
-            *iDst = std::move(v);
-            return Copy(++iDst, ++iSrc, --nSrc);
-        }
-        
-        
-        
-        static itr_t Join(itr_t iJoin, Unit& rUnit, const Part& rPart)
-        {
-            auto nDsc = rPart.n[Part::oDsc];
-            auto nAsc = rPart.n[Part::oAsc];
-            
-            rUnit.a = iJoin;
-            rUnit.n = nDsc + nAsc;
-            
-            iJoin = Copy(iJoin, rPart.a[Part::oDsc], nDsc);
-            iJoin = Copy(iJoin, rPart.a[Part::oAsc], nAsc);
-            return iJoin;
-        }
-        
-        
-        
-        static itr_t Join(itr_t aJoin, Unit& rUnit, const Part& rPart0, const Part& rPart1, const cmp_t& Comp)
-        {
-            auto iJoin = aJoin;
-            auto o0 = rPart0.o;
-            auto o1 = rPart1.o;
-            auto i0 = rPart0.a[o0];
-            auto i1 = rPart1.a[o1];
-            auto n0 = rPart0.n[o0];
-            auto n1 = rPart1.n[o1];
-            auto v0 = std::move(*i0);
-            auto v1 = std::move(*i1);
-            
-            while (true){
-                if (Comp(v1, v0)){
-                    *iJoin++ = std::move(v1);
-                    if (--n1){
-                        v1 = std::move(*++i1);
-                    } else {
-                        if (o1){
-                            o1 = Part::oAsc;
-                            i1 = rPart1.a[o1];
-                            n1 = rPart1.n[o1];
-                            v1 = std::move(*i1);
-                        } else {
-                            iJoin = Copy(iJoin, i0, n0, v0);
-                            if (o0) iJoin = Copy(iJoin, rPart0.a[Part::oAsc], rPart0.n[Part::oAsc]);
-                            break;
-                        }
-                    }
-                } else {
-                    *iJoin++ = std::move(v0);
-                    if (--n0){
-                        v0 = std::move(*++i0);
-                    } else {
-                        if (o0){
-                            o0 = Part::oAsc;
-                            i0 = rPart0.a[o0];
-                            n0 = rPart0.n[o0];
-                            v0 = std::move(*i0);
-                        } else {
-                            iJoin = Copy(iJoin, i1, n1, v1);
-                            if (o1) iJoin = Copy(iJoin, rPart1.a[Part::oAsc], rPart1.n[Part::oAsc]);
-                            break;
-                        }
-                    }
-                }
-            }
-            
-            rUnit.a = aJoin;
-            rUnit.n = Num(aJoin, iJoin);
-            return iJoin;
-        }
-        
-        
-        
-        static itr_t Join(itr_t aJoin, Unit& rUnit, const Unit& rUnit0, const Unit& rUnit1, const cmp_t& Comp)
-        {
-            auto iJoin = aJoin;
-            auto i0 = rUnit0.a;
-            auto i1 = rUnit1.a;
-            auto n0 = rUnit0.n;
-            auto n1 = rUnit1.n;
-            auto v0 = std::move(*i0);
-            auto v1 = std::move(*i1);
-            
-            while (true){
-                if (Comp(v1, v0)){
-                    *iJoin++ = std::move(v1);
-                    if (--n1){
-                        v1 = std::move(*++i1);
-                    } else {
-                        iJoin = Copy(iJoin, i0, n0, v0);
-                        break;
-                    }
-                } else {
-                    *iJoin++ = std::move(v0);
-                    if (--n0){
-                        v0 = std::move(*++i0);
-                    } else {
-                        iJoin = Copy(iJoin, i1, n1, v1);
-                        break;
-                    }
-                }
-            }
-            
-            rUnit.a = aJoin;
-            rUnit.n = Num(aJoin, iJoin);
-            return iJoin;
-        }
-        
-        
-        
-        static bool MakePart(Part& rPart, itr_t& riSrc, itr_t eSrc, itr_t& raDsc, const cmp_t& Comp)
-        {
-            auto iSrc = riSrc;
-            auto aAsc = iSrc;
-            auto eAsc = aAsc;
-            
-            {   // 
-                Auto nSrc = Num(iSrc, eSrc);
-                auto nIns = (nSrc < cnIns)? nSrc: cnIns;
                 
-                auto aIns = iSrc;
-                auto eIns = iSrc + nIns;
-                while (++eAsc != eIns){
-                    if (Comp(eAsc[0], eAsc[-1])){
-                        auto iIns = eAsc;
-                        auto v = std::move(iIns[0]);
-                        do {
-                            iIns[0] = std::move(iIns[-1]);
-                        } while (--iIns != aIns && Comp(v, iIns[-1]));
-                        iIns[0] = std::move(v);
+                
+                
+                struct Unit
+                {
+                    itr_t a;
+                    dif_t n;
+                };
+                
+                
+                
+                struct Dive
+                {
+                    Unit mUnit;
+                    itr_t miJoin;
+                };
+            
+            
+            
+            private:
+                int Msb(std::size_t v) noexcept
+                {
+                    if (v){
+                        union IEEE_754 {
+                            float v;
+                            struct {
+                                unsigned int fraction:23;
+                                unsigned int exponent:8;
+                                unsigned int sign:1;
+                            } map;
+                        };
+                        IEEE_754 lzc;
+                        lzc.v = v;
+                        return (lzc.map.exponent - 127);
                     }
+                    return -1;
                 }
                 
-                for (; (eAsc != eSrc) && !Comp(eAsc[0], eAsc[-1]); ++eAsc);
-            }
-            
-            {   // 
-                auto aDsc = raDsc;
-                auto eDsc = aDsc;
                 
-                auto iOdd = eAsc;
-                auto nOdd = Num(iOdd, eSrc);
-                if (nOdd){
-                    if (Comp(*iOdd, aAsc[0]/*Min*/)){
-                        *--aDsc = std::move(*iOdd++);
-                        
-                        while (--nOdd){
-                            if (Comp(*iOdd, eAsc[-1]/*Max*/)){
-                                if (Comp(*iOdd, aDsc[0]/*Min*/)){
-                                    *--aDsc = std::move(*iOdd++);
+                
+                int MsbAlignment(std::size_t v) noexcept
+                {
+                    return Msb(v + v - 1);
+                }
+                
+                
+                
+                int LowerLimit(int v, int limit) noexcept
+                {
+                    return (v > limit)? v: limit;
+                }
+                
+                
+                
+                dif_t Num(itr_t const first, itr_t const last) noexcept
+                {
+                    return last - first;
+                }
+                
+                
+                
+                itr_t Copy(itr_t iDst, itr_t iSrc, dif_t nSrc)
+                {
+                    while (nSrc--) *iDst++ = std::move(*iSrc++);
+                    return iDst;
+                }
+                
+                
+                
+                itr_t Copy(itr_t iDst, itr_t iSrc, dif_t nSrc, ref_t v)
+                {
+                    *iDst = std::move(v);
+                    return Copy(++iDst, ++iSrc, --nSrc);
+                }
+                
+                
+                
+                itr_t Join(itr_t iJoin, Unit& rUnit, const Part& rPart)
+                {
+                    auto nDsc = rPart.n[Part::oDsc];
+                    auto nAsc = rPart.n[Part::oAsc];
+                    
+                    rUnit.a = iJoin;
+                    rUnit.n = nDsc + nAsc;
+                    
+                    iJoin = Copy(iJoin, rPart.a[Part::oDsc], nDsc);
+                    iJoin = Copy(iJoin, rPart.a[Part::oAsc], nAsc);
+                    return iJoin;
+                }
+                
+                
+                
+                itr_t Join(itr_t aJoin, Unit& rUnit, const Part& rPart0, const Part& rPart1)
+                {
+                    auto iJoin = aJoin;
+                    auto o0 = rPart0.o;
+                    auto o1 = rPart1.o;
+                    auto i0 = rPart0.a[o0];
+                    auto i1 = rPart1.a[o1];
+                    auto n0 = rPart0.n[o0];
+                    auto n1 = rPart1.n[o1];
+                    auto v0 = std::move(*i0);
+                    auto v1 = std::move(*i1);
+                    
+                    auto Comp = mComp;
+                    while (true){
+                        if (Comp(v1, v0)){
+                            *iJoin++ = std::move(v1);
+                            if (--n1){
+                                v1 = std::move(*++i1);
+                            } else {
+                                if (o1){
+                                    o1 = Part::oAsc;
+                                    i1 = rPart1.a[o1];
+                                    n1 = rPart1.n[o1];
+                                    v1 = std::move(*i1);
                                 } else {
+                                    iJoin = Copy(iJoin, i0, n0, v0);
+                                    if (o0) iJoin = Copy(iJoin, rPart0.a[Part::oAsc], rPart0.n[Part::oAsc]);
                                     break;
                                 }
+                            }
+                        } else {
+                            *iJoin++ = std::move(v0);
+                            if (--n0){
+                                v0 = std::move(*++i0);
                             } else {
-                                *eAsc++ = std::move(*iOdd++);
+                                if (o0){
+                                    o0 = Part::oAsc;
+                                    i0 = rPart0.a[o0];
+                                    n0 = rPart0.n[o0];
+                                    v0 = std::move(*i0);
+                                } else {
+                                    iJoin = Copy(iJoin, i1, n1, v1);
+                                    if (o1) iJoin = Copy(iJoin, rPart1.a[Part::oAsc], rPart1.n[Part::oAsc]);
+                                    break;
+                                }
                             }
                         }
                     }
+                    
+                    rUnit.a = aJoin;
+                    rUnit.n = Num(aJoin, iJoin);
+                    return iJoin;
                 }
                 
-                {   // 
-                    Auto nDsc = Num(aDsc, eDsc);
-                    rPart.a[Part::oAsc] = aAsc;
-                    rPart.n[Part::oAsc] = Num(aAsc, eAsc);
-                    rPart.a[Part::oDsc] = aDsc;
-                    rPart.n[Part::oDsc] = nDsc;
-                    rPart.o = (nDsc)? Part::oDsc: Part::oAsc;
+                
+                
+                itr_t Join(itr_t aJoin, Unit& rUnit, const Unit& rUnit0, const Unit& rUnit1)
+                {
+                    auto iJoin = aJoin;
+                    auto i0 = rUnit0.a;
+                    auto i1 = rUnit1.a;
+                    auto n0 = rUnit0.n;
+                    auto n1 = rUnit1.n;
+                    auto v0 = std::move(*i0);
+                    auto v1 = std::move(*i1);
+                    
+                    auto Comp = mComp;
+                    while (true){
+                        if (Comp(v1, v0)){
+                            *iJoin++ = std::move(v1);
+                            if (--n1){
+                                v1 = std::move(*++i1);
+                            } else {
+                                iJoin = Copy(iJoin, i0, n0, v0);
+                                break;
+                            }
+                        } else {
+                            *iJoin++ = std::move(v0);
+                            if (--n0){
+                                v0 = std::move(*++i0);
+                            } else {
+                                iJoin = Copy(iJoin, i1, n1, v1);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    rUnit.a = aJoin;
+                    rUnit.n = Num(aJoin, iJoin);
+                    return iJoin;
                 }
                 
-                riSrc = iOdd;
-                raDsc = aDsc;
-                return (nOdd);
-            }
-        }
-        
-        
-        
-        static void Turn(itr_t iDst, const Part& rPart)
-        {
-            auto nDsc = rPart.n[Part::oDsc];
-            auto nAsc = rPart.n[Part::oAsc];
-            auto aDsc = iDst;
-            auto aAsc = iDst + nDsc;
-            
-            if (nDsc){
-                Copy(aAsc, rPart.a[Part::oAsc], nAsc);
-                Copy(aDsc, rPart.a[Part::oDsc], nDsc);
-            }
-        }
-    
-    
-    
-    public:
-        static void Sort(rai_t const first, rai_t const last, cmp_t comp)
-        {
-            Auto nSrc = std::distance(first, last);
-            if (nSrc > 1){
-                Array<rai_t, rai_v> aOriginal(first, last);
-                Array<rai_t, rai_v> aExternal(nSrc);
                 
-                if (aExternal.begin()){
-                    Auto nDive = LowerLimit((MsbAlignment(nSrc) - cbIns), 1);
-                    Auto aDive = local_array(Dive, (nDive+1));
-                    for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].miJoin = (oDive & Bit(0))? aExternal.begin(): aOriginal.begin();
+                
+                bool MakePart(Part& rPart, itr_t& riSrc, itr_t eSrc, itr_t& raDsc)
+                {
+                    auto iSrc = riSrc;
+                    auto aAsc = iSrc;
+                    auto eAsc = aAsc;
+                    auto Comp = mComp;
                     
                     {   // 
-                        std::size_t nJoin = 0;
+                        Auto nSrc = Num(iSrc, eSrc);
+                        auto nIns = (nSrc < cnIns)? nSrc: cnIns;
+                        
+                        auto aIns = iSrc;
+                        auto eIns = iSrc + nIns;
+                        while (++eAsc != eIns){
+                            if (Comp(eAsc[0], eAsc[-1])){
+                                auto iIns = eAsc;
+                                auto v = std::move(iIns[0]);
+                                do {
+                                    iIns[0] = std::move(iIns[-1]);
+                                } while (--iIns != aIns && Comp(v, iIns[-1]));
+                                iIns[0] = std::move(v);
+                            }
+                        }
+                        
+                        for (; (eAsc != eSrc) && !Comp(eAsc[0], eAsc[-1]); ++eAsc);
+                    }
+                    
+                    {   // 
+                        auto aDsc = raDsc;
+                        auto eDsc = aDsc;
+                        
+                        auto iOdd = eAsc;
+                        auto nOdd = Num(iOdd, eSrc);
+                        if (nOdd){
+                            if (Comp(*iOdd, aAsc[0]/*Min*/)){
+                                *--aDsc = std::move(*iOdd++);
+                                
+                                while (--nOdd){
+                                    if (Comp(*iOdd, eAsc[-1]/*Max*/)){
+                                        if (Comp(*iOdd, aDsc[0]/*Min*/)){
+                                            *--aDsc = std::move(*iOdd++);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        *eAsc++ = std::move(*iOdd++);
+                                    }
+                                }
+                            }
+                        }
                         
                         {   // 
-                            auto iJoin = aExternal.begin();
+                            Auto nDsc = Num(aDsc, eDsc);
+                            rPart.a[Part::oAsc] = aAsc;
+                            rPart.n[Part::oAsc] = Num(aAsc, eAsc);
+                            rPart.a[Part::oDsc] = aDsc;
+                            rPart.n[Part::oDsc] = nDsc;
+                            rPart.o = (nDsc)? Part::oDsc: Part::oAsc;
+                        }
+                        
+                        riSrc = iOdd;
+                        raDsc = aDsc;
+                        return (nOdd);
+                    }
+                }
+                
+                
+                
+                void Turn(const Part& rPart)
+                {
+                    auto nDsc = rPart.n[Part::oDsc];
+                    auto nAsc = rPart.n[Part::oAsc];
+                    auto aDsc = maOriginal.begin();
+                    auto aAsc = aDsc + nDsc;
+                    
+                    if (nDsc){
+                        Copy(aAsc, rPart.a[Part::oAsc], nAsc);
+                        Copy(aDsc, rPart.a[Part::oDsc], nDsc);
+                    }
+                }
+            
+            
+            
+            public:
+                ~Technique() noexcept
+                {}
+                
+                
+                
+                Technique(rai_t const first, rai_t const last, cmp_t comp)
+                :mnOriginal(std::distance(first, last))
+                ,maOriginal(first, last)
+                ,maExternal(mnOriginal)
+                ,mComp(comp)
+                {}
+                
+                
+                
+                void Sort()
+                {
+                    if (maExternal.begin()){
+                        Auto nDive = LowerLimit((MsbAlignment(mnOriginal) - cbIns), 1);
+                        Auto aDive = local_array(Dive, (nDive+1));
+                        for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].miJoin = (oDive & Bit(0))? maExternal.begin(): maOriginal.begin();
+                        
+                        {   // 
+                            std::size_t nJoin = 0;
                             
-                            Auto aSrc = aOriginal.begin();
-                            Auto eSrc = aOriginal.end();
-                            Auto iSrc = aSrc;
-                            while (iSrc != eSrc){
-                                Unit vUnit;
+                            {   // 
+                                auto iJoin = maExternal.begin();
+                                
+                                Auto iSrc = maOriginal.begin();
+                                Auto eSrc = maOriginal.end();
+                                while (iSrc != eSrc){
+                                    Unit vUnit;
+                                    
+                                    {   // 
+                                        Part vPart0, vPart1;
+                                        auto aDsc = maExternal.end();
+                                        if (MakePart(vPart0, iSrc, eSrc, aDsc)){
+                                            MakePart(vPart1, iSrc, eSrc, aDsc);
+                                            iJoin = Join(iJoin, vUnit, vPart0, vPart1);
+                                        } else {
+                                            if (nJoin){
+                                                iJoin = Join(iJoin, vUnit, vPart0);
+                                            } else {
+                                                Turn(vPart0);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    
+                                    {   // 
+                                        auto pDive = &aDive[0];
+                                        auto Carry = nJoin++;
+                                        Carry = (nJoin ^ Carry) & Carry;
+                                        for (; Carry; Carry >>= 1, ++pDive){
+                                            pDive->miJoin = Join(pDive->miJoin, vUnit, pDive->mUnit, vUnit);
+                                        }
+                                        pDive->mUnit = vUnit;
+                                    }
+                                }
+                            }
+                            
+                            if (nJoin){
+                                auto bJoin = nJoin & -nJoin;
+                                auto oDive = Msb(bJoin);
+                                auto pResult = &aDive[oDive++];
                                 
                                 {   // 
-                                    Part vPart0, vPart1;
-                                    auto aDsc = aExternal.end();
-                                    if (MakePart(vPart0, iSrc, eSrc, aDsc, comp)){
-                                        MakePart(vPart1, iSrc, eSrc, aDsc, comp);
-                                        iJoin = Join(iJoin, vUnit, vPart0, vPart1, comp);
-                                    } else {
-                                        if (nJoin){
-                                            iJoin = Join(iJoin, vUnit, vPart0);
-                                        } else {
-                                            Turn(aSrc, vPart0);
-                                            break;
+                                    auto pDive = &aDive[oDive];
+                                    auto Carry = nJoin ^ bJoin;
+                                    Carry >>= oDive;
+                                    for (; Carry; Carry >>= 1, ++pDive){
+                                        if (Carry & Bit(0)){
+                                            Join(pDive->miJoin, pResult->mUnit, pDive->mUnit, pResult->mUnit);
                                         }
                                     }
                                 }
                                 
-                                {   // 
-                                    auto pDive = &aDive[0];
-                                    auto Carry = nJoin++;
-                                    Carry = (nJoin ^ Carry) & Carry;
-                                    for (; Carry; Carry >>= 1, ++pDive){
-                                        pDive->miJoin = Join(pDive->miJoin, vUnit, pDive->mUnit, vUnit, comp);
-                                    }
-                                    pDive->mUnit = vUnit;
+                                if (pResult->mUnit.a == maExternal.begin()){
+                                    Copy(maOriginal.begin(), pResult->mUnit.a, pResult->mUnit.n);
                                 }
                             }
                         }
-                        
-                        if (nJoin){
-                            auto bJoin = nJoin & -nJoin;
-                            auto oDive = Msb(bJoin);
-                            auto pResult = &aDive[oDive++];
-                            
-                            {   // 
-                                auto pDive = &aDive[oDive];
-                                auto Carry = nJoin ^ bJoin;
-                                Carry >>= oDive;
-                                for (; Carry; Carry >>= 1, ++pDive){
-                                    if (Carry & Bit(0)){
-                                        Join(pDive->miJoin, pResult->mUnit, pDive->mUnit, pResult->mUnit, comp);
-                                    }
-                                }
-                            }
-                            
-                            if (pResult->mUnit.a == aExternal.begin()){
-                                Copy(aOriginal.begin(), pResult->mUnit.a, pResult->mUnit.n);
-                            }
-                        }
+                    } else {
+                        throw std::bad_alloc();
                     }
-                } else {
-                    throw std::bad_alloc();
                 }
-            }
+        };
+    
+    
+    
+    public:
+        static void Sort(RandomAccessIterator const first, RandomAccessIterator const last, Compare comp)
+        {
+            Technique(first, last, comp).Sort();
         }
 };
 
