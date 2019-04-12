@@ -6,6 +6,7 @@
 #include <vector>
 #include <array>
 #include <algorithm>
+#include <iostream>
 #include <memory.h>
 
 #if USE_GFX_TIMSORT//[
@@ -28,6 +29,7 @@ double precision(double v){ return (v/0x000fffffffffffff); }
 enum eSrc {
     Rand,
     Flat,
+    Bin,
     Inc,
     Dec,
     IInc,   // interleaved increasing
@@ -39,6 +41,7 @@ enum eSrc {
 static const char* apSrc[eSrc::Num]={
     "Rand",
     "Flat",
+    "Bin",
     "Inc",
     "Dec",
     "IInc",
@@ -72,6 +75,12 @@ bool operator ==(const Test& s, const Test& t)
 }
 
 
+
+void dump(std::vector<Test>& a)
+{
+    for (auto& v : a) std::cout << v.m << std::endl;
+    std::cout << std::endl;
+}
 
 void increment(std::vector<Test>& a)
 {
@@ -115,6 +124,11 @@ void init(eSrc Src, std::vector<Test>& a, std::mt19937& rRand, std::uniform_int_
             case eSrc::Flat:{
                 sort_t m = 1;
                 for (auto& v : a) v.m = m;
+                break;
+            }
+            case eSrc::Bin:{
+                bool b = false;
+                for (auto& v : a){ v.m = (b)? 0:1; b = !b; }
                 break;
             }
             case eSrc::Inc:{
@@ -243,6 +257,7 @@ int main(int argc, char* argv[])
     test(eSrc::Rand, 100000000, 10);
     
     test(eSrc::Flat, 100000000, 5);
+    test(eSrc::Bin,  100000000, 5);
     test(eSrc::Inc,  100000000, 5);
     test(eSrc::Dec,  100000000, 5);
     test(eSrc::IInc, 100000000, 5);
