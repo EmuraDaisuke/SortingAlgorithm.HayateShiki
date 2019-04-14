@@ -338,22 +338,18 @@ template <class RandomAccessIterator, class Compare> class Private
                 
                 
                 
-                bool MakePart(Part& rPart, itr_t& riSrc, itr_t eSrc, itr_t& raDsc)
+                itr_t Ascending(itr_t iSrc, itr_t eSrc)
                 {
-                    auto iSrc = riSrc;
-                    auto aAsc = iSrc;
-                    auto eAsc = aAsc;
-                    auto Comp = mComp;
-                    
-                    {   // 
-                        Auto nSrc = Num(iSrc, eSrc);
+                    Auto nSrc = Num(iSrc, eSrc);
+                    if (nSrc){
                         auto nIns = (nSrc < cnIns)? nSrc: cnIns;
-                        
-                        auto aIns = iSrc;
+                        auto aIns = iSrc - 1;
                         auto eIns = iSrc + nIns;
-                        while (++eAsc != eIns){
-                            if (Comp(eAsc[0], eAsc[-1])){
-                                auto iIns = eAsc;
+                        
+                        auto Comp = mComp;
+                        while (++iSrc != eIns){
+                            if (Comp(iSrc[0], iSrc[-1])){
+                                auto iIns = iSrc;
                                 auto v = std::move(iIns[0]);
                                 do {
                                     iIns[0] = std::move(iIns[-1]);
@@ -362,7 +358,53 @@ template <class RandomAccessIterator, class Compare> class Private
                             }
                         }
                         
-                        for (; (eAsc != eSrc) && !Comp(eAsc[0], eAsc[-1]); ++eAsc);
+                        for (; (iSrc < eSrc) && !Comp(iSrc[0], iSrc[-1]); ++iSrc);
+                    }
+                    return iSrc;
+                }
+                
+                
+                
+                itr_t Descending(itr_t iSrc, itr_t eSrc)
+                {
+                    Auto nSrc = Num(iSrc, eSrc);
+                    if (nSrc){
+                        auto nIns = (nSrc < cnIns)? nSrc: cnIns;
+                        auto aIns = iSrc - 1;
+                        auto eIns = iSrc + nIns;
+                        
+                        auto Comp = mComp;
+                        while (++iSrc != eIns){
+                            if (!Comp(iSrc[0], iSrc[-1])){
+                                auto iIns = iSrc;
+                                auto v = std::move(iIns[0]);
+                                do {
+                                    iIns[0] = std::move(iIns[-1]);
+                                } while (--iIns != aIns && !Comp(v, iIns[-1]));
+                                iIns[0] = std::move(v);
+                            }
+                        }
+                        
+                        for (; (iSrc != eSrc) && Comp(iSrc[0], iSrc[-1]); ++iSrc);
+                        
+                        std::reverse(aIns, iSrc-1);
+                    }
+                    return iSrc;
+                }
+                
+                
+                
+                dif_t MakePart(Part& rPart, itr_t& riSrc, itr_t eSrc, itr_t& raDsc)
+                {
+                    auto iSrc = riSrc;
+                    auto aAsc = iSrc;
+                    auto eAsc = aAsc;
+                    
+                    auto Comp = mComp;
+                    if (Comp(iSrc[1], iSrc[0])){
+                        eAsc = Descending(iSrc+1, eSrc);
+                    } else {
+                        eAsc = Ascending(iSrc+1, eSrc);
                     }
                     
                     {   // 
@@ -400,7 +442,7 @@ template <class RandomAccessIterator, class Compare> class Private
                         
                         riSrc = iOdd;
                         raDsc = aDsc;
-                        return (nOdd);
+                        return nOdd;
                     }
                 }
                 
