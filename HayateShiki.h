@@ -90,7 +90,7 @@ template <class RandomAccessIterator, class Compare> class Private
                 Array(dif_t Size)
                 :mbTemporary(true)
                 ,mSize(Size)
-                ,mData(static_cast<ptr_t>(::operator new(sizeof(val_t) * Size, std::nothrow)))
+                ,mData(static_cast<ptr_t>(::operator new(sizeof(val_t) * Size)))
                 {}
                 
                 
@@ -206,13 +206,6 @@ template <class RandomAccessIterator, class Compare> class Private
                 
                 
                 
-                dif_t Num(itr_t const first, itr_t const last) noexcept
-                {
-                    return last - first;
-                }
-                
-                
-                
                 itr_t Copy(itr_t iDst, itr_t iSrc, dif_t nSrc)
                 {
                     while (nSrc--) *iDst++ = std::move(*iSrc++);
@@ -294,7 +287,7 @@ template <class RandomAccessIterator, class Compare> class Private
                     }
                     
                     rUnit.a = aJoin;
-                    rUnit.n = Num(aJoin, iJoin);
+                    rUnit.n = std::distance(aJoin, iJoin);
                     return iJoin;
                 }
                 
@@ -332,7 +325,7 @@ template <class RandomAccessIterator, class Compare> class Private
                     }
                     
                     rUnit.a = aJoin;
-                    rUnit.n = Num(aJoin, iJoin);
+                    rUnit.n = std::distance(aJoin, iJoin);
                     return iJoin;
                 }
                 
@@ -340,7 +333,7 @@ template <class RandomAccessIterator, class Compare> class Private
                 
                 itr_t Ascending(itr_t iSrc, itr_t eSrc)
                 {
-                    Auto nSrc = Num(iSrc, eSrc);
+                    Auto nSrc = std::distance(iSrc, eSrc);
                     if (nSrc){
                         auto nIns = (nSrc < cnIns)? nSrc: cnIns;
                         auto aIns = iSrc - 1;
@@ -367,7 +360,7 @@ template <class RandomAccessIterator, class Compare> class Private
                 
                 itr_t Descending(itr_t iSrc, itr_t eSrc)
                 {
-                    Auto nSrc = Num(iSrc, eSrc);
+                    Auto nSrc = std::distance(iSrc, eSrc);
                     if (nSrc){
                         auto nIns = (nSrc < cnIns)? nSrc: cnIns;
                         auto aIns = iSrc - 1;
@@ -412,7 +405,7 @@ template <class RandomAccessIterator, class Compare> class Private
                         auto eDsc = aDsc;
                         
                         auto iOdd = eAsc;
-                        auto nOdd = Num(iOdd, eSrc);
+                        auto nOdd = std::distance(iOdd, eSrc);
                         if (nOdd){
                             if (Comp(*iOdd, aAsc[0]/*Min*/)){
                                 *--aDsc = std::move(*iOdd++);
@@ -432,9 +425,9 @@ template <class RandomAccessIterator, class Compare> class Private
                         }
                         
                         {   // 
-                            Auto nDsc = Num(aDsc, eDsc);
+                            Auto nDsc = std::distance(aDsc, eDsc);
                             rPart.a[Part::oAsc] = aAsc;
-                            rPart.n[Part::oAsc] = Num(aAsc, eAsc);
+                            rPart.n[Part::oAsc] = std::distance(aAsc, eAsc);
                             rPart.a[Part::oDsc] = aDsc;
                             rPart.n[Part::oDsc] = nDsc;
                             rPart.o = (nDsc)? Part::oDsc: Part::oAsc;
@@ -480,7 +473,7 @@ template <class RandomAccessIterator, class Compare> class Private
                 
                 void Sort()
                 {
-                    if (maExternal.begin()){
+                    if (mnOriginal > 1){
                         Auto nDive = LowerLimit((MsbAlignment(mnOriginal) - cbIns), 1);
                         Auto aDive = local_array(Dive, (nDive+1));
                         for (int oDive = 0; oDive < nDive; ++oDive) aDive[oDive].miJoin = (oDive & Bit(0))? maExternal.begin(): maOriginal.begin();
@@ -545,8 +538,6 @@ template <class RandomAccessIterator, class Compare> class Private
                                 }
                             }
                         }
-                    } else {
-                        throw std::bad_alloc();
                     }
                 }
         };
