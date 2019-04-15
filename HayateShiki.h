@@ -351,7 +351,7 @@ template <class RandomAccessIterator, class Compare> class Private
                             }
                         }
                         
-                        for (; (iSrc < eSrc) && !Comp(iSrc[0], iSrc[-1]); ++iSrc);
+                        for (; (iSrc != eSrc) && !Comp(iSrc[0], iSrc[-1]); ++iSrc);
                     }
                     return iSrc;
                 }
@@ -380,7 +380,7 @@ template <class RandomAccessIterator, class Compare> class Private
                         
                         for (; (iSrc != eSrc) && Comp(iSrc[0], iSrc[-1]); ++iSrc);
                         
-                        std::reverse(aIns, iSrc-1);
+                        std::reverse(aIns, iSrc);
                     }
                     return iSrc;
                 }
