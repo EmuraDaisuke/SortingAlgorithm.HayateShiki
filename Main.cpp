@@ -1,6 +1,10 @@
 
 
 
+#define NDEBUG          1
+#define USE_PDQSORT     0
+#define USE_GFX_TIMSORT 0
+
 #include <cassert>
 #include <random>
 #include <vector>
@@ -8,6 +12,10 @@
 #include <algorithm>
 #include <iostream>
 #include <memory.h>
+
+#if USE_PDQSORT//[
+#include "./pdqsort.h"
+#endif//]
 
 #if USE_GFX_TIMSORT//[
 #include "./timsort.hpp"
@@ -170,6 +178,7 @@ void test(eSrc Src, int nTest, int nLoop)
         double t1 = 0;
         double t2 = 0;
         double t3 = 0;
+        double t4 = 0;
         
         for (auto n = nLoop; n; --n){
             init(Src, a, Rand, Range);
@@ -192,12 +201,21 @@ void test(eSrc Src, int nTest, int nLoop)
             }
             #endif//]
             
+            #if USE_PDQSORT//[
+            {   // 
+                auto s = a;
+                auto l = Lapse::Now();
+                pdqsort(s.begin(), s.end());
+                t2 += Lapse::Now() - l;
+            }
+            #endif//]
+            
             #if USE_GFX_TIMSORT//[
             {   // 
                 auto s = a;
                 auto l = Lapse::Now();
                 gfx::timsort(s.begin(), s.end());
-                t2 += Lapse::Now() - l;
+                t3 += Lapse::Now() - l;
             }
             #endif//]
             
@@ -206,17 +224,20 @@ void test(eSrc Src, int nTest, int nLoop)
                 auto s = a;
                 auto l = Lapse::Now();
                 HayateShiki::sort(s.begin(), s.end());
-                t3 += Lapse::Now() - l;
+                t4 += Lapse::Now() - l;
             }
             #endif//]
         }
         
         printf("std::sort         : "); Lapse::Out(t0 / nLoop);
         printf("std::stable_sort  : "); Lapse::Out(t1 / nLoop);
-        #if USE_GFX_TIMSORT//[
-        printf("gfx::timsort      : "); Lapse::Out(t2 / nLoop);
+        #if USE_PDQSORT//[
+        printf("pdqsort           : "); Lapse::Out(t2 / nLoop);
         #endif//]
-        printf("HayateShiki::sort : "); Lapse::Out(t3 / nLoop);
+        #if USE_GFX_TIMSORT//[
+        printf("gfx::timsort      : "); Lapse::Out(t3 / nLoop);
+        #endif//]
+        printf("HayateShiki::sort : "); Lapse::Out(t4 / nLoop);
     }
     #else//][
     for (auto n = nLoop; n; --n){
