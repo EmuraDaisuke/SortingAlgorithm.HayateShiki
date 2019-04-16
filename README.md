@@ -138,9 +138,9 @@ The unit is seconds, the lower the number, the faster.
 ## **Msvc**
 |Array|std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
 |-:|-:|-:|-:|-:|
-|10,000|0.00045104|0.00038737|0.00062055|**0.00037726**|
-|1,000,000|0.06895459|0.06194708|0.09007592|**0.05960105**|
-|100,000,000|8.94273760|8.48790507|11.70993918|**7.90364017**|
+|10,000|0.00045542|0.00038963|0.00063259|**0.00038294**|
+|1,000,000|0.06900306|0.06157810|0.08987316|**0.05963387**|
+|100,000,000|8.95517375|8.46306964|11.66389608|**7.92667359**|
 
 Msvc is slower on std::sort and faster on std::stable_sort compared to other compilers.  
 Although the unexpected result came out from the beginning, I was able to win because of this characteristic.  
@@ -148,9 +148,9 @@ Although the unexpected result came out from the beginning, I was able to win be
 ## **clang++**
 |Array|std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
 |-:|-:|-:|-:|-:|
-|10,000|0.00039748|0.00044216|0.00058833|**0.00039542**|
-|1,000,000|**0.05794733**|0.06703828|0.08304218|0.06467940|
-|100,000,000|**7.59819467**|9.02512841|10.90226948|8.69520123|
+|10,000|**0.00039482**|0.00044310|0.00058579|0.00040413|
+|1,000,000|**0.05872628**|0.06865944|0.08372736|0.06585446|
+|100,000,000|**7.77238754**|9.34188338|11.05923570|8.91061443|
 
 A disappointing result clang++.  
 Compared to other compilers, the optimization logic resulted in questionable results.  
@@ -158,9 +158,9 @@ Compared to other compilers, the optimization logic resulted in questionable res
 ## **g++**
 |Array|std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
 |-:|-:|-:|-:|-:|
-|10,000|0.00039915|0.00044045|0.00062139|**0.00037733**|
-|1,000,000|**0.05791501**|0.06553794|0.08642513|0.05851454|
-|100,000,000|**7.62242797**|8.88416647|11.16218393|7.86212201|
+|10,000|0.00039890|0.00043748|0.00063354|**0.00037713**|
+|1,000,000|**0.05793422**|0.06557857|0.08855738|0.05840274|
+|100,000,000|**7.61435214**|8.86337450|11.39435302|7.83662079|
 
 Good fight was g ++.  
 Even [1,000,000] has become close.  
@@ -172,26 +172,26 @@ The difference in [100,000,000] seems to be the effect of caching efficiency due
 The following all sorted the array [100,000,000] of float value.  
 The unit is seconds, the lower the number, the faster.  
 
+## Constant
+||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
+|-:|-:|-:|-:|-:|
+|Msvc|0.06713918|1.24926460|**0.03552456**|0.04001278|
+|clang++|0.96321854|1.38927788|0.04675406|**0.03971196**|
+|g++|1.24455174|1.27419866|0.04730418|**0.03958826**|
+
 ## Ascending order
 ||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
 |-:|-:|-:|-:|-:|
-|Msvc|1.05042422|1.26930574|0.04714074|**0.04002944**|
-|clang++|1.05335930|1.44680144|**0.03551652**|0.03996312|
-|g++|1.43373992|1.27849542|0.04640786|**0.03997012**|
+|Msvc|1.04917134|1.24956610|**0.03797098**|0.04027310|
+|clang++|1.06030176|1.38933688|0.04619012|**0.03979394**|
+|g++|1.42411580|1.26989158|0.04694066|**0.03960894**|
 
 ## Descending order
 ||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
 |-:|-:|-:|-:|-:|
-|Msvc|1.24230476|1.63490322|**0.05923096**|0.27479994|
-|clang++|0.76989306|1.53627088|**0.07876710**|0.22927154|
-|g++|1.04074260|1.53410250|**0.07918274**|0.23090848|
-
-## Constant
-||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
-|-:|-:|-:|-:|-:|
-|Msvc|0.06637970|1.26441570|0.04730072|**0.04029890**|
-|clang++|1.14472912|1.44540720|**0.03527028**|0.03984316|
-|g++|1.26266952|1.29177762|0.04832892|**0.04242476**|
+|Msvc|1.24351168|1.62816732|**0.05992322**|0.06486218|
+|clang++|0.76173164|1.49226176|**0.07894234**|0.08284760|
+|g++|1.04372210|1.50443338|**0.07921356**|0.08537936|
 
 <br>
 
@@ -199,7 +199,7 @@ The unit is seconds, the lower the number, the faster.
 How was it?  
 
 Beat std::stable_sort!  
-Almost defeated gfx::timsort but lost in descending order.  
+gfx::timsort won by random numbers, but under certain conditions it was close.  
 And it turns out that it is not easy to win std::sort.  
 However, depending on the environment and input, it may have the potential to surpass std::sort.  
 
