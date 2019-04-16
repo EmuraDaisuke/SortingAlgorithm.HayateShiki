@@ -230,20 +230,17 @@ void test(eSrc Src, int nTest, int nLoop)
         std::stable_sort(s1.begin(), s1.end());
         HayateShiki::sort(s2.begin(), s2.end());
         
-        auto bSimple01 = (s0 == s1);
-        auto bSimple12 = (s1 == s2);
-        auto bSimple20 = (s2 == s0);
-        auto bStrict01 = (memcmp(s0.data(), s1.data(), s1.size() * sizeof(Test)) == 0);
-        auto bStrict12 = (memcmp(s1.data(), s2.data(), s2.size() * sizeof(Test)) == 0);
-        auto bStrict20 = (memcmp(s2.data(), s0.data(), s0.size() * sizeof(Test)) == 0);
+        auto bEqual01 = (s0 == s1);
+        auto bEqual12 = (s1 == s2);
+        auto bEqual20 = (s2 == s0);
         
         #if 0//[
         printf("\n");
-        printf("%d %d %d\n", bSimple01, bStrict01, (a == s0));
-        printf("%d %d %d\n", bSimple12, bStrict12, (a == s1));
-        printf("%d %d %d\n", bSimple20, bStrict20, (a == s2));
+        printf("%d %d\n", bEqual01, (a == s0));
+        printf("%d %d\n", bEqual12, (a == s1));
+        printf("%d %d\n", bEqual20, (a == s2));
         #endif//]
-        assert(bSimple12 && bStrict12);
+        assert(bEqual12);
     }
     #endif//]
 }
