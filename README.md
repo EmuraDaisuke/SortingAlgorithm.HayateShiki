@@ -154,11 +154,7 @@ The unit is seconds, the lower the number, the faster.
 # Finally
 How was it?  
 
-Beat std::stable_sort!  
-gfx::timsort won by random numbers, but under certain conditions it was close.  
-And it turns out that it is not easy to win std::sort.  
-However, depending on the environment and input, it may have the potential to surpass std::sort.  
-
+Hayate-Shiki is a stable sort, but has strong characteristics to random numbers.  
 Does it come the day when merge sort wins quick sort?  
 
 The sort algorithm is still romantic.  
