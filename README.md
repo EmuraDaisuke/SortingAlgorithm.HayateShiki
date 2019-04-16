@@ -135,36 +135,9 @@ TestG++.exe
 Sorts float values ​​generated from the same seed.  
 The unit is seconds, the lower the number, the faster.  
 
-## **Msvc**
-|Array|std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
-|-:|-:|-:|-:|-:|
-|10,000|0.00045542|0.00038963|0.00063259|**0.00038294**|
-|1,000,000|0.06900306|0.06157810|0.08987316|**0.05963387**|
-|100,000,000|8.95517375|8.46306964|11.66389608|**7.92667359**|
-
-Msvc is slower on std::sort and faster on std::stable_sort compared to other compilers.  
-Although the unexpected result came out from the beginning, I was able to win because of this characteristic.  
-
-## **clang++**
-|Array|std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
-|-:|-:|-:|-:|-:|
-|10,000|**0.00039482**|0.00044310|0.00058579|0.00040413|
-|1,000,000|**0.05872628**|0.06865944|0.08372736|0.06585446|
-|100,000,000|**7.77238754**|9.34188338|11.05923570|8.91061443|
-
-A disappointing result clang++.  
-Compared to other compilers, the optimization logic resulted in questionable results.  
-
-## **g++**
-|Array|std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
-|-:|-:|-:|-:|-:|
-|10,000|0.00039890|0.00043748|0.00063354|**0.00037713**|
-|1,000,000|**0.05793422**|0.06557857|0.08855738|0.05840274|
-|100,000,000|**7.61435214**|8.86337450|11.39435302|7.83662079|
-
-Good fight was g ++.  
-Even [1,000,000] has become close.  
-The difference in [100,000,000] seems to be the effect of caching efficiency due to in-place or out-place.  
+![Random_10000](./Image/Random_10000.png)
+![Random_1000000](./Image/Random_1000000.png)
+![Random_100000000](./Image/Random_100000000.png)
 
 <br>
 
@@ -172,26 +145,9 @@ The difference in [100,000,000] seems to be the effect of caching efficiency due
 The following all sorted the array [100,000,000] of float value.  
 The unit is seconds, the lower the number, the faster.  
 
-## Constant
-||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
-|-:|-:|-:|-:|-:|
-|Msvc|0.06713918|1.24926460|**0.03552456**|0.04001278|
-|clang++|0.96321854|1.38927788|0.04675406|**0.03971196**|
-|g++|1.24455174|1.27419866|0.04730418|**0.03958826**|
-
-## Ascending order
-||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
-|-:|-:|-:|-:|-:|
-|Msvc|1.04917134|1.24956610|**0.03797098**|0.04027310|
-|clang++|1.06030176|1.38933688|0.04619012|**0.03979394**|
-|g++|1.42411580|1.26989158|0.04694066|**0.03960894**|
-
-## Descending order
-||std::sort|std::stable_sort|gfx::timsort|Hayate-Shiki|
-|-:|-:|-:|-:|-:|
-|Msvc|1.24351168|1.62816732|**0.05992322**|0.06486218|
-|clang++|0.76173164|1.49226176|**0.07894234**|0.08284760|
-|g++|1.04372210|1.50443338|**0.07921356**|0.08537936|
+![Msvc](./Image/Msvc.png)
+![clang++](./Image/clang++.png)
+![g++](./Image/g++.png)
 
 <br>
 

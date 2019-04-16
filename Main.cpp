@@ -36,24 +36,24 @@ double precision(double v){ return (v/0x000fffffffffffff); }
 
 enum eSrc {
     Rand,
-    Flat,
-    Inc,
-    Dec,
-    IBin,
-    IInc,   // interleaved increasing
-    IDec,   // interleaved decreasing
+    Equal,
+    Asc,
+    Dsc,
+    Saw,
+    AscSaw,
+    DscSaw,
     
     Num,
 };
 
 static const char* apSrc[eSrc::Num]={
     "Rand",
-    "Flat",
-    "Inc",
-    "Dec",
-    "IBin",
-    "IInc",
-    "IDec",
+    "Equal",
+    "Asc",
+    "Dsc",
+    "Saw",
+    "AscSaw",
+    "DscSaw",
 };
 
 
@@ -129,30 +129,30 @@ void init(eSrc Src, std::vector<Test>& a, std::mt19937& rRand, std::uniform_int_
                 for (auto& v : a) v.m = rRange(rRand);
                 break;
             }
-            case eSrc::Flat:{
+            case eSrc::Equal:{
                 sort_t m = 1;
                 for (auto& v : a) v.m = m;
                 break;
             }
-            case eSrc::Inc:{
+            case eSrc::Asc:{
                 increment(a);
                 break;
             }
-            case eSrc::Dec:{
+            case eSrc::Dsc:{
                 decrement(a);
                 break;
             }
-            case eSrc::IBin:{
+            case eSrc::Saw:{
                 bool b = false;
                 for (auto& v : a){ v.m = (b)? 0:1; b = !b; }
                 break;
             }
-            case eSrc::IInc:{
+            case eSrc::AscSaw:{
                 increment(a);
                 interleave(a);
                 break;
             }
-            case eSrc::IDec:{
+            case eSrc::DscSaw:{
                 decrement(a);
                 interleave(a);
                 break;
@@ -270,15 +270,15 @@ void test(eSrc Src, int nTest, int nLoop)
 
 int main(int argc, char* argv[])
 {
-    test(eSrc::Rand,     10000, 1000);
-    test(eSrc::Rand,   1000000, 100);
-    test(eSrc::Rand, 100000000, 10);
+    test(eSrc::Rand,       10000, 1000);
+    test(eSrc::Rand,     1000000, 100);
+    test(eSrc::Rand,   100000000, 10);
     
-    test(eSrc::Flat, 100000000, 5);
-    test(eSrc::Inc,  100000000, 5);
-    test(eSrc::Dec,  100000000, 5);
-    test(eSrc::IBin, 100000000, 5);
-    test(eSrc::IInc, 100000000, 5);
-    test(eSrc::IDec, 100000000, 5);
+    test(eSrc::Equal,  100000000, 5);
+    test(eSrc::Asc,    100000000, 5);
+    test(eSrc::Dsc,    100000000, 5);
+    test(eSrc::Saw,    100000000, 5);
+    test(eSrc::AscSaw, 100000000, 5);
+    test(eSrc::DscSaw, 100000000, 5);
     return 0;
 }
