@@ -141,7 +141,7 @@ The unit is seconds, the lower the number, the faster.
 
 <br>
 
-# Limited condition benchmark
+# Conditional benchmark
 The following all sorted the array [100,000,000] of float value.  
 The unit is seconds, the lower the number, the faster.  
 
