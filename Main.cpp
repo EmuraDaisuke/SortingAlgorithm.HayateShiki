@@ -79,7 +79,11 @@ bool operator <(const Test& s, const Test& t)
 
 bool operator ==(const Test& s, const Test& t)
 {
+    #if ORDER//[
+    return (s.m == t.m && s.o == t.o);
+    #else//][
     return s.m == t.m;
+    #endif//]
 }
 
 
