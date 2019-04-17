@@ -155,6 +155,8 @@ The unit is seconds, the lower the number, the faster.
 How was it?  
 
 Hayate-Shiki is a stable sort, but has strong characteristics to random numbers.  
+In the conditional benchmark, it was found that the influence of the optimization characteristic of the compiler, rather than the algorithm characteristic, becomes strong, so that it can hardly be a judgment material.  
+
 Does it come the day when merge sort wins quick sort?  
 
 The sort algorithm is still romantic.  
