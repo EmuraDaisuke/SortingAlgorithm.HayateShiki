@@ -1,9 +1,9 @@
 
 
 
-#define NDEBUG          1
-#define USE_PDQSORT     0
-#define USE_GFX_TIMSORT 0
+#define NDEBUG
+//#define USE_PDQSORT
+//#define USE_GFX_TIMSORT
 
 #include <cassert>
 #include <random>
@@ -13,11 +13,11 @@
 #include <iostream>
 #include <memory.h>
 
-#if USE_PDQSORT//[
+#if defined(USE_PDQSORT)//[
 #include "./pdqsort.h"
 #endif//]
 
-#if USE_GFX_TIMSORT//[
+#if defined(USE_GFX_TIMSORT)//[
 #include "./timsort.hpp"
 #endif//]
 
@@ -176,7 +176,7 @@ void test(eSrc Src, int nTest, int nLoop)
     
     printf("\n--- %s %d\n", apSrc[Src], nTest);
     
-    #if 1//[
+    #if defined(NDEBUG)//[
     {   // 
         double t0 = 0;
         double t1 = 0;
@@ -205,7 +205,7 @@ void test(eSrc Src, int nTest, int nLoop)
             }
             #endif//]
             
-            #if USE_PDQSORT//[
+            #if defined(USE_PDQSORT)//[
             {   // 
                 auto s = a;
                 auto l = Lapse::Now();
@@ -214,7 +214,7 @@ void test(eSrc Src, int nTest, int nLoop)
             }
             #endif//]
             
-            #if USE_GFX_TIMSORT//[
+            #if defined(USE_GFX_TIMSORT)//[
             {   // 
                 auto s = a;
                 auto l = Lapse::Now();
@@ -235,10 +235,10 @@ void test(eSrc Src, int nTest, int nLoop)
         
         printf("std::sort         : "); Lapse::Out(t0 / nLoop);
         printf("std::stable_sort  : "); Lapse::Out(t1 / nLoop);
-        #if USE_PDQSORT//[
+        #if defined(USE_PDQSORT)//[
         printf("pdqsort           : "); Lapse::Out(t2 / nLoop);
         #endif//]
-        #if USE_GFX_TIMSORT//[
+        #if defined(USE_GFX_TIMSORT)//[
         printf("gfx::timsort      : "); Lapse::Out(t3 / nLoop);
         #endif//]
         printf("HayateShiki::sort : "); Lapse::Out(t4 / nLoop);
@@ -274,6 +274,7 @@ void test(eSrc Src, int nTest, int nLoop)
 
 int main(int argc, char* argv[])
 {
+    #if defined(NDEBUG)//[
     test(eSrc::Rand,       10000, 1000);
     test(eSrc::Rand,     1000000, 100);
     test(eSrc::Rand,   100000000, 10);
@@ -284,5 +285,14 @@ int main(int argc, char* argv[])
     test(eSrc::Saw,    100000000, 5);
     test(eSrc::AscSaw, 100000000, 5);
     test(eSrc::DscSaw, 100000000, 5);
+    #else//][
+    test(eSrc::Rand,   1000, 10000);
+    test(eSrc::Equal,  1000, 1);
+    test(eSrc::Asc,    1000, 1);
+    test(eSrc::Dsc,    1000, 1);
+    test(eSrc::Saw,    1000, 1);
+    test(eSrc::AscSaw, 1000, 1);
+    test(eSrc::DscSaw, 1000, 1);
+    #endif//]
     return 0;
 }
