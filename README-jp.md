@@ -101,7 +101,7 @@
 * Core i7-8700 3.20GHz
 
 ## **Msvc**
-Microsoft(R) C/C++ Optimizing Compiler Version 19.16.27027.1 for x64  
+Microsoft(R) C/C++ Optimizing Compiler Version 19.16.27030.1 for x64  
 ~~~
 cl Main.cpp -std:c++14 -Ox -EHsc -Fe:TestMsvc.exe
 TestMsvc.exe
