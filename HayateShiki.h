@@ -458,7 +458,7 @@ template <class RandomAccessIterator, class Compare> class Private
                     
                     if (nDsc){
                         Turn(aAsc, rPart.a[Part::oAsc], nAsc);
-                        Copy(aDsc, rPart.a[Part::oDsc], nDsc);
+                        Turn(aDsc, rPart.a[Part::oDsc], nDsc);
                     }
                 }
             
