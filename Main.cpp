@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <iostream>
 #include <memory.h>
+#include "./Lapse.h"
 
 #if defined(USE_PDQSORT)//[
 #include "./pdqsort.h"
@@ -22,7 +23,6 @@
 #endif//]
 
 #include "./HayateShiki.h"
-#include "./Lapse.h"
 
 
 
@@ -286,13 +286,15 @@ int main(int argc, char* argv[])
     test(eSrc::AscSaw, 100000000, 5);
     test(eSrc::DscSaw, 100000000, 5);
     #else//][
-    test(eSrc::Rand,   1000, 10000);
-    test(eSrc::Equal,  1000, 1);
-    test(eSrc::Asc,    1000, 1);
-    test(eSrc::Dsc,    1000, 1);
-    test(eSrc::Saw,    1000, 1);
-    test(eSrc::AscSaw, 1000, 1);
-    test(eSrc::DscSaw, 1000, 1);
+    for (int nTest = 1; nTest < 200; ++nTest){
+        test(eSrc::Rand,   nTest, 1000);
+        test(eSrc::Equal,  nTest, 1);
+        test(eSrc::Asc,    nTest, 1);
+        test(eSrc::Dsc,    nTest, 1);
+        test(eSrc::Saw,    nTest, 1);
+        test(eSrc::AscSaw, nTest, 1);
+        test(eSrc::DscSaw, nTest, 1);
+    }
     #endif//]
     return 0;
 }

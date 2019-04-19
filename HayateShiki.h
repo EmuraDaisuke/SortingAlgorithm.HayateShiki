@@ -331,57 +331,51 @@ template <class RandomAccessIterator, class Compare> class Private
                 
                 
                 
-                itr_t Ascending(itr_t iSrc, itr_t eSrc)
+                itr_t Ascending(itr_t iSrc, itr_t eSrc, dif_t nSrc)
                 {
-                    Auto nSrc = std::distance(iSrc, eSrc);
-                    if (nSrc){
-                        auto nIns = (nSrc < cnIns)? nSrc: cnIns;
-                        auto aIns = iSrc - 1;
-                        auto eIns = iSrc + nIns;
-                        
-                        auto Comp = mComp;
-                        while (++iSrc != eIns){
-                            if (Comp(iSrc[0], iSrc[-1])){
-                                auto iIns = iSrc;
-                                auto v = std::move(iIns[0]);
-                                do {
-                                    iIns[0] = std::move(iIns[-1]);
-                                } while (--iIns != aIns && Comp(v, iIns[-1]));
-                                iIns[0] = std::move(v);
-                            }
+                    auto nIns = (nSrc < cnIns)? nSrc: cnIns;
+                    auto aIns = iSrc - 1;
+                    auto eIns = iSrc + nIns;
+                    
+                    auto Comp = mComp;
+                    while (++iSrc != eIns){
+                        if (Comp(iSrc[0], iSrc[-1])){
+                            auto i = iSrc;
+                            auto v = std::move(i[0]);
+                            do {
+                                i[0] = std::move(i[-1]);
+                            } while (--i != aIns && Comp(v, i[-1]));
+                            i[0] = std::move(v);
                         }
-                        
-                        for (; (iSrc != eSrc) && !Comp(iSrc[0], iSrc[-1]); ++iSrc);
                     }
+                    
+                    for (; (iSrc != eSrc) && !Comp(iSrc[0], iSrc[-1]); ++iSrc);
                     return iSrc;
                 }
                 
                 
                 
-                itr_t Descending(itr_t iSrc, itr_t eSrc)
+                itr_t Descending(itr_t iSrc, itr_t eSrc, dif_t nSrc)
                 {
-                    Auto nSrc = std::distance(iSrc, eSrc);
-                    if (nSrc){
-                        auto nIns = (nSrc < cnIns)? nSrc: cnIns;
-                        auto aIns = iSrc - 1;
-                        auto eIns = iSrc + nIns;
-                        
-                        auto Comp = mComp;
-                        while (++iSrc != eIns){
-                            if (!Comp(iSrc[0], iSrc[-1])){
-                                auto iIns = iSrc;
-                                auto v = std::move(iIns[0]);
-                                do {
-                                    iIns[0] = std::move(iIns[-1]);
-                                } while (--iIns != aIns && !Comp(v, iIns[-1]));
-                                iIns[0] = std::move(v);
-                            }
+                    auto nIns = (nSrc < cnIns)? nSrc: cnIns;
+                    auto aIns = iSrc - 1;
+                    auto eIns = iSrc + nIns;
+                    
+                    auto Comp = mComp;
+                    while (++iSrc != eIns){
+                        if (!Comp(iSrc[0], iSrc[-1])){
+                            auto i = iSrc;
+                            auto v = std::move(i[0]);
+                            do {
+                                i[0] = std::move(i[-1]);
+                            } while (--i != aIns && !Comp(v, i[-1]));
+                            i[0] = std::move(v);
                         }
-                        
-                        for (; (iSrc != eSrc) && Comp(iSrc[0], iSrc[-1]); ++iSrc);
-                        
-                        std::reverse(aIns, iSrc);
                     }
+                    
+                    for (; (iSrc != eSrc) && Comp(iSrc[0], iSrc[-1]); ++iSrc);
+                    
+                    std::reverse(aIns, iSrc);
                     return iSrc;
                 }
                 
@@ -391,13 +385,18 @@ template <class RandomAccessIterator, class Compare> class Private
                 {
                     auto iSrc = riSrc;
                     auto aAsc = iSrc;
-                    auto eAsc = aAsc;
-                    
+                    auto eAsc = eSrc;
                     auto Comp = mComp;
-                    if (Comp(iSrc[1], iSrc[0])){
-                        eAsc = Descending(iSrc+1, eSrc);
-                    } else {
-                        eAsc = Ascending(iSrc+1, eSrc);
+                    
+                    {   // 
+                        Auto nSrc = std::distance(iSrc, eSrc);
+                        if (nSrc > 1){
+                            if (Comp(iSrc[1], iSrc[0])){
+                                eAsc = Descending(iSrc+1, eSrc, nSrc-1);
+                            } else {
+                                eAsc = Ascending(iSrc+1, eSrc, nSrc-1);
+                            }
+                        }
                     }
                     
                     {   // 
@@ -441,6 +440,15 @@ template <class RandomAccessIterator, class Compare> class Private
                 
                 
                 
+                void Turn(itr_t iDst, itr_t iSrc, dif_t nSrc)
+                {
+                    iDst += nSrc;
+                    iSrc += nSrc;
+                    while (nSrc--) *--iDst = std::move(*--iSrc);
+                }
+                
+                
+                
                 void Turn(const Part& rPart)
                 {
                     auto nDsc = rPart.n[Part::oDsc];
@@ -449,7 +457,7 @@ template <class RandomAccessIterator, class Compare> class Private
                     auto aAsc = aDsc + nDsc;
                     
                     if (nDsc){
-                        Copy(aAsc, rPart.a[Part::oAsc], nAsc);
+                        Turn(aAsc, rPart.a[Part::oAsc], nAsc);
                         Copy(aDsc, rPart.a[Part::oDsc], nDsc);
                     }
                 }
