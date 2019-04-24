@@ -160,10 +160,3 @@ In the conditional benchmark, it was found that the influence of the optimizatio
 Does it come the day when merge sort wins quick sort?  
 
 The sort algorithm is still romantic.  
-
-<br>
-
----
-It may be more enjoyable if you read the following together.  
-* [Setsuna-Shiki](https://github.com/EmuraDaisuke/SortingAlgorithm.SetsunaShiki)
-* [Homura-Shiki](https://github.com/EmuraDaisuke/SortingAlgorithm.HomuraShiki)

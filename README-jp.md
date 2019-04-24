@@ -154,8 +154,3 @@ TestG++.exe
 マージソート種がクイックソート種に勝てる日は来るのでしょうか？  
 
 ソートアルゴリズムには、まだ浪漫が残っています。  
-
----
-以下も併せて読んでいただけると、より楽しめるかも知れません。  
-* [刹那式（せつなしき）](https://github.com/EmuraDaisuke/SortingAlgorithm.SetsunaShiki)
-* [焔式（ほむらしき）](https://github.com/EmuraDaisuke/SortingAlgorithm.HomuraShiki)
